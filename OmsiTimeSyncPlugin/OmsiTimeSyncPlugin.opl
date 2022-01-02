@@ -1,0 +1,8 @@
+1.0.0.0
+[dll]
+OmsiTimeSyncPlugin.dll
+
+[varlist]
+2
+Velocity
+schedule_active
