@@ -2,7 +2,7 @@
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ixe1)
 
-[![GitHub issues](https://img.shields.io/github/issues/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync/issues-Telemetry-Plugin) [![GitHub forks](https://img.shields.io/github/forks/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin/network) [![GitHub license](https://img.shields.io/github/license/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)
+[![GitHub issues](https://img.shields.io/github/issues/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin/issues) [![GitHub forks](https://img.shields.io/github/forks/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin/network) [![GitHub license](https://img.shields.io/github/license/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)
 
 # OMSI Time Sync Telemetry Plugin
 A small plugin for OMSI 2 which provides some telemetry from OMSI 2 to OMSI Time Sync. This is required if you wish to use any 'auto sync mode' which is prefixed with '(Plugin)' in OMSI Time Sync.
