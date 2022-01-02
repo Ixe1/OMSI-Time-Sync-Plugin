@@ -11,6 +11,8 @@ A small plugin for OMSI 2 which provides some telemetry from OMSI 2 to OMSI Time
 - .NET Framework 4.7.2
 - [OMSI Time Sync](https://github.com/Ixe1/OMSI-Time-Sync)
 
+If compiling the source code yourself, [DllExport](https://www.nuget.org/packages/DllExport/) is another dependency.
+
 # Installation Steps
 1. Download the latest release from [here](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin/releases)
 2. Extract the ZIP file to somewhere convenient
