@@ -2,7 +2,7 @@
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ixe1)
 
-[![GitHub issues](https://img.shields.io/github/issues/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync/issues-Telemetry-Plugin) [![GitHub forks](https://img.shields.io/github/forks/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin/network) [![GitHub license](https://img.shields.io/github/license/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)
+[![GitHub issues](https://img.shields.io/github/issues/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin/issues) [![GitHub forks](https://img.shields.io/github/forks/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin/network) [![GitHub license](https://img.shields.io/github/license/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Telemetry-Plugin)
 
 # OMSI Time Sync Telemetry Plugin
 A small plugin for OMSI 2 which provides some telemetry from OMSI 2 to OMSI Time Sync. This is required if you wish to use any 'auto sync mode' which is prefixed with '(Plugin)' in OMSI Time Sync.
@@ -31,3 +31,6 @@ Thanks in advance to anyone who chooses to donate something.
 
 # Licence
 This is licenced under the GNU General Public License v3 (GPL-3) licence. Please see https://www.gnu.org/licenses/gpl-3.0.en.html for more information.
+
+# Credits
+- [sjain](https://github.com/sjain882) - Helping beta test the plugin as well as sending the base plugin template for OMSI 2 in C#.NET
