@@ -33,4 +33,4 @@ Thanks in advance to anyone who chooses to donate something.
 This is licenced under the GNU General Public License v3 (GPL-3) licence. Please see https://www.gnu.org/licenses/gpl-3.0.en.html for more information.
 
 # Credits
-[sjain](https://github.com/sjain882) - Helping beta test the plugin as well as sending the base plugin template for OMSI 2 in C#.NET
+- [sjain](https://github.com/sjain882) - Helping beta test the plugin as well as sending the base plugin template for OMSI 2 in C#.NET
