@@ -9,24 +9,28 @@ namespace OmsiTimeSyncPlugin
 {
     public class Main
     {
+        // OMSI plugin starting
         [DllExport(CallingConvention.StdCall)]
         public static void PluginStart(ref UIntPtr aOwner)
         {
             Task.Factory.StartNew(() => RunServer());
         }
 
+        // OMSI plugin ending
         [DllExport(CallingConvention.StdCall)]
         public static void PluginFinalize()
         {
             OmsiTelemetry.omsiClosing = true;
         }
 
+        // Not used at the moment
         [DllExport(CallingConvention.StdCall)]
         public static void AccessTrigger(byte variableIndex, ref bool triggerScript)
         {
             
         }
 
+        // OMSI variables
         [DllExport(CallingConvention.StdCall)]
         public static void AccessVariable(byte variableIndex, ref float value, ref bool writeValue)
         {
@@ -48,12 +52,14 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // Not used at the moment
         [DllExport(CallingConvention.StdCall)]
         public static unsafe void AccessStringVariable(byte variableIndex, char* firstCharacterAddress, ref bool writeValue)
         {
             
         }
 
+        // Not used at the moment
         [DllExport(CallingConvention.StdCall)]
         public static void AccessSystemVariable(byte variableIndex, ref float value, ref bool writeValue)
         {
@@ -61,28 +67,37 @@ namespace OmsiTimeSyncPlugin
         }
         static void RunServer()
         {
+            // While loop if OMSI isn't closing
             while (!OmsiTelemetry.omsiClosing)
             {
                 try
                 {
+                    // Setup a new named pipe server for communication between this plugin and the OMSI Time Sync program
                     using (var pipeServer = new NamedPipeServerStream("OmsiTimeSyncTelemetryPlugin", PipeDirection.InOut))
                     {
+                        // Setup a stream reader and writer for receiving and sending communication
                         using (var reader = new StreamReader(pipeServer))
                         {
                             using (var writer = new StreamWriter(pipeServer))
                             {
+                                // If named pipe server has no connection then
                                 if (!pipeServer.IsConnected)
                                 {
+                                    // Wait here for a connection, don't execute further code yet
                                     pipeServer.WaitForConnection();
                                 }
 
+                                // While loop again for this section of code
                                 while (!OmsiTelemetry.omsiClosing)
                                 {
+                                    // Read message sent from the OMSI Time Sync program
                                     var message = reader.ReadLine();
 
                                     switch (message)
                                     {
+                                        // If the message is 'telemetry'
                                         case "telemetry":
+                                            // Send telemetry
                                             writer.WriteLine(
                                                 OmsiTelemetry.busSpeedKph + "*" +
                                                 OmsiTelemetry.scheduleActive
@@ -102,6 +117,7 @@ namespace OmsiTimeSyncPlugin
         }
     }
 
+    // OMSI's telemetry
     static class OmsiTelemetry
     {
         public static bool omsiClosing = false;
