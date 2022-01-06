@@ -23,16 +23,20 @@ namespace OmsiTimeSyncPlugin
         IntPtr processHandle;
         int processID;
 
+        public Process theProc;
+
         public Mem()
         {
             processHandle = IntPtr.Zero;
             processID = 0;
+            theProc = null;
         }
 
         public void CloseProcess()
         {
             processHandle = IntPtr.Zero;
             processID = 0;
+            theProc = null;
         }
 
         public bool OpenProcess(int pID)
