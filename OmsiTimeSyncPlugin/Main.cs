@@ -1,9 +1,11 @@
 ﻿using net.r_eg.DllExport;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace OmsiTimeSyncPlugin
 {
@@ -13,7 +15,11 @@ namespace OmsiTimeSyncPlugin
         [DllExport(CallingConvention.StdCall)]
         public static void PluginStart(ref UIntPtr aOwner)
         {
-            Task.Factory.StartNew(() => RunServer());
+            //Task.Factory.StartNew(() => RunServer());
+
+            Form frmMain = new frmMain();
+
+            frmMain.Show();
         }
 
         // OMSI plugin ending
