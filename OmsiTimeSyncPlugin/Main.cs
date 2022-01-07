@@ -20,6 +20,8 @@ namespace OmsiTimeSyncPlugin
             new System.Threading.Thread(
                     delegate ()
                     {
+                        System.Threading.Thread.Sleep(1000);
+
                         Application.Run(frmMain);
                     }
                 ).Start();

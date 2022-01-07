@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
@@ -12,6 +13,13 @@ namespace OmsiTimeSyncPlugin
 {
     public partial class frmMain : Form
     {
+        [DllImport("user32")]
+        public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("user32")]
+        public static extern bool EnableMenuItem(IntPtr hMenu, uint itemId, uint uEnable);
+
+
         public DateTime omsiTime = DateTime.MinValue;
         public DateTime systemTime;
 
@@ -498,6 +506,9 @@ namespace OmsiTimeSyncPlugin
         // Form loading event
         private void frmMain_Load(object sender, EventArgs e)
         {
+            // Disable the close button
+            EnableMenuItem(GetSystemMenu(Handle, false), 0xF060, 1);
+
             // Load app config
             loadConfig();
 
