@@ -87,5 +87,10 @@ namespace OmsiTimeSyncPlugin
 
         public static float busSpeedKph = 0.0f;
         public static float scheduleActive = 0.0f;
+        public static float humansCount = 0.0f;
+        public static float cabinAirTemp = 0.0f;
+        public static float cabinAirRelHum = 0.0f;
+        public static float cabinAirAbsHum = 0.0f;
+        public static float engineTemperature = 0.0f;
     }
 }

@@ -164,18 +164,25 @@ namespace OmsiTimeSyncPlugin
                             if (AppConfig.onlyResyncOmsiTimeIfBehindActualTime)
                             {
                                 // If only resync OMSI time if behind actual time is enabled then:
-                                // - Add two seconds to the system time retrieved a moment ago
-                                newSystemTime = newSystemTime.AddSeconds(2.0);
+                                // - Add three seconds to the system time retrieved a moment ago
+                                newSystemTime = newSystemTime.AddSeconds(3.0);
                             }
 
-                            // Apply the new date and time in OMSI by modifying some of the addresses in memory
-                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "hour"), "int", newSystemTime.Hour.ToString());
-                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "minute"), "int", newSystemTime.Minute.ToString());
-                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "second"), "float", newSystemTime.Second.ToString());
+                            // Game needs to be paused momentarily to prevent BCS thinking time is going backwards if near the end of the current minute or hour
+                            // TODO: Check the following conditional statement works before implementing a brief pause
 
-                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "day"), "int", newSystemTime.Day.ToString());
-                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "month"), "int", newSystemTime.Month.ToString());
-                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "year"), "int", newSystemTime.Year.ToString());
+                            // If current OMSI second is less than 55 then it's safe to increment time (this is due to BCS thinking time is going backwards otherwise)
+                            // Apply the new date and time in OMSI by modifying some of the addresses in memory
+                            if (omsiTime.Second < 55)
+                            {
+                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "hour"), "byte", newSystemTime.Hour.ToString());
+                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "minute"), "byte", newSystemTime.Minute.ToString());
+                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "second"), "float", newSystemTime.Second.ToString() + "." + newSystemTime.Millisecond.ToString());
+
+                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "day"), "int", newSystemTime.Day.ToString());
+                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "month"), "int", newSystemTime.Month.ToString());
+                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "year"), "int", newSystemTime.Year.ToString());
+                            }
                         }
                     }
 
