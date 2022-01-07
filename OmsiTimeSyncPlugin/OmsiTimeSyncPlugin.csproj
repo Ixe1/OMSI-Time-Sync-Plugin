@@ -128,4 +128,7 @@
   <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
     <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>"$(SolutionDir)\CodeSign.bat"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

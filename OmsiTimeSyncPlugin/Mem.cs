@@ -43,10 +43,12 @@ namespace OmsiTimeSyncPlugin
         {
             processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION, false, pID);
             processID = pID;
+            theProc = Process.GetProcessById(processID);
 
             if (processHandle != IntPtr.Zero) return true;
 
             processID = 0;
+            theProc = null;
 
             return false;
         }

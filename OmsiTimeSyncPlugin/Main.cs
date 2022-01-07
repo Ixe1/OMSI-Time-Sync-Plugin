@@ -9,21 +9,28 @@ namespace OmsiTimeSyncPlugin
 {
     public class Main
     {
+        private static Form frmMain;
+
         // OMSI plugin starting
         [DllExport(CallingConvention.StdCall)]
         public static void PluginStart(ref UIntPtr aOwner)
         {
-            //Task.Factory.StartNew(() => RunServer());
+            frmMain = new frmMain();
 
-            //Form frmMain = new frmMain();
-
-            //frmMain.Show();
+            new System.Threading.Thread(
+                    delegate ()
+                    {
+                        Application.Run(frmMain);
+                    }
+                ).Start();
         }
 
         // OMSI plugin ending
         [DllExport(CallingConvention.StdCall)]
         public static void PluginFinalize()
         {
+            frmMain.Close();
+
             OmsiTelemetry.omsiClosing = true;
         }
 
