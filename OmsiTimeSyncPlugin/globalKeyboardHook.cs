@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace OmsiTimeSyncPlugin
+namespace OmsiTimeSyncPluginMisc
 {
 	internal class globalKeyboardHook
 	{

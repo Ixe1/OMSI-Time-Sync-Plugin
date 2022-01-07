@@ -28,7 +28,7 @@ namespace OmsiTimeSyncPlugin
         public Mem m;
 
         // For hotkey support
-        globalKeyboardHook gkhManualSyncHotkey = new globalKeyboardHook();
+        OmsiTimeSyncPluginMisc.globalKeyboardHook gkhManualSyncHotkey = new OmsiTimeSyncPluginMisc.globalKeyboardHook();
 
         // Hours difference for auto detecting offset time
         public double hoursDifference = 0.0;
@@ -185,7 +185,7 @@ namespace OmsiTimeSyncPlugin
         {
             try
             {
-                TextReader txtRdr = new StreamReader("config.txt");
+                TextReader txtRdr = new StreamReader("OmsiTimeSync.cfg");
 
                 AppConfig.alwaysOnTop = Convert.ToBoolean(txtRdr.ReadLine());
                 AppConfig.autoSyncOmsiTime = Convert.ToBoolean(txtRdr.ReadLine());
@@ -225,7 +225,7 @@ namespace OmsiTimeSyncPlugin
         {
             try
             {
-                TextWriter txtWtr = new StreamWriter("config.txt");
+                TextWriter txtWtr = new StreamWriter("OmsiTimeSync.cfg");
 
                 txtWtr.WriteLine(AppConfig.alwaysOnTop.ToString());
                 txtWtr.WriteLine(AppConfig.autoSyncOmsiTime.ToString());
@@ -323,7 +323,7 @@ namespace OmsiTimeSyncPlugin
                 {
                     omsiVersion = getOmsiVersion();
                 }
-
+                
                 // If the OMSI version is still unknown then we assume OMSI is still loading
                 // Further code execution stops here until the version can be identified
                 if (omsiVersion == "Unknown")
@@ -531,8 +531,8 @@ namespace OmsiTimeSyncPlugin
             // Show manual sync hotkey dropdown menu
             cmbManualSyncHotkey.Visible = true;
 
-            // If config.txt doesn't exist
-            if (!File.Exists("config.txt"))
+            // If OmsiTimeSync.cfg doesn't exist
+            if (!File.Exists("OmsiTimeSync.cfg"))
             {
                 // Show initial message box dialog (yes/no)
                 if (MessageBox.Show(
@@ -540,7 +540,7 @@ namespace OmsiTimeSyncPlugin
                     "\n" +
                     "It's important that you close any games that have anti-cheat protection before pressing 'Yes'! This program performs memory editing which might be falsely flagged as a hack.\n" +
                     "\n" +
-                    "This notice will not be shown again unless the 'config.txt' file is deleted. The author of this program will not be liable.\n" +
+                    "This notice will not be shown again unless the 'OmsiTimeSync.cfg' file is deleted in OMSI's plugin directory. The author of this program will not be liable.\n" +
                     "\n" +
                     "While this is a free program, a donation is highly appreciated if you like this program.\n" +
                     "\n" +
@@ -563,21 +563,21 @@ namespace OmsiTimeSyncPlugin
 
             // v2.3.004
             // Date/Time
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("hour", "base+0x0046176C"));     // int (h)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("minute", "base+0x0046176D"));   // int (m)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("second", "base+0x00461770"));   // float (second.millisecond)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("year", "base+0x00461790"));     // int (yyyy)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("month", "base+0x0046178C"));    // int (m)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("day", "base+0x00461778"));      // int (d)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("hour", "0x0046176C"));     // int (h)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("minute", "0x0046176D"));   // int (m)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("second", "0x00461770"));   // float (second.millisecond)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("year", "0x00461790"));     // int (yyyy)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("month", "0x0046178C"));    // int (m)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("day", "0x00461778"));      // int (d)
 
             // v2.2.032
             // Date/Time
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("hour", "base+0x00461768"));     // int (h)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("minute", "base+0x00461769"));   // int (m)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("second", "base+0x0046176C"));   // float (second.millisecond)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("year", "base+0x0046178C"));     // int (yyyy)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("month", "base+0x00461788"));    // int (m)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("day", "base+0x00461774"));      // int (d)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("hour", "0x00461768"));     // int (h)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("minute", "0x00461769"));   // int (m)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("second", "0x0046176C"));   // float (second.millisecond)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("year", "0x0046178C"));     // int (yyyy)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("month", "0x00461788"));    // int (m)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("day", "0x00461774"));      // int (d)
 
             // Enable the timer which does various stuff
             tmrOMSI.Enabled = true;

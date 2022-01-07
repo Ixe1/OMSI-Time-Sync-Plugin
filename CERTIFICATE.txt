@@ -1,0 +1,4 @@
+Any compiled DLL file release officially done by Ixel / Paul Lewis, the author of OMSI Time Sync, will have the following serial number:
+- 64e5cc4297c711bc4e113d40fb67a459
+
+If this serial number doesn't match or the digital certificate is missing on the DLL file then it's not been done by the author of OMSI Time Sync.
