@@ -15,12 +15,15 @@ namespace OmsiTimeSyncPlugin
         [DllExport(CallingConvention.StdCall)]
         public static void PluginStart(ref UIntPtr aOwner)
         {
+            Application.SetCompatibleTextRenderingDefault(true);
+            Application.EnableVisualStyles();
+
             frmMain = new frmMain();
 
             new System.Threading.Thread(
                     delegate ()
                     {
-                        System.Threading.Thread.Sleep(1000);
+                        System.Threading.Thread.Sleep(4000);
 
                         Application.Run(frmMain);
                     }
@@ -47,6 +50,8 @@ namespace OmsiTimeSyncPlugin
         [DllExport(CallingConvention.StdCall)]
         public static void AccessVariable(byte variableIndex, ref float value, ref bool writeValue)
         {
+            writeValue = false;
+
             switch (variableIndex)
             {
                 case 0:
@@ -61,6 +66,22 @@ namespace OmsiTimeSyncPlugin
                 case 1:
                     // scheduleActive (either 0 or 1)
                     OmsiTelemetry.scheduleActive = value;
+                    break;
+
+                case 2:
+                    OmsiTelemetry.humansCount = value;
+                    break;
+
+                case 3:
+                    OmsiTelemetry.cabinAirTemp = value;
+                    break;
+
+                case 4:
+                    OmsiTelemetry.cabinAirRelHum = value;
+                    break;
+
+                case 5:
+                    OmsiTelemetry.cabinAirAbsHum = value;
                     break;
             }
         }
@@ -91,6 +112,5 @@ namespace OmsiTimeSyncPlugin
         public static float cabinAirTemp = 0.0f;
         public static float cabinAirRelHum = 0.0f;
         public static float cabinAirAbsHum = 0.0f;
-        public static float engineTemperature = 0.0f;
     }
 }

@@ -1,8 +1,12 @@
-1.0.0.0
+1.1.0.0
 [dll]
 OmsiTimeSyncPlugin.dll
 
 [varlist]
-2
+6
 Velocity
 schedule_active
+humans_count
+Cabinair_Temp
+Cabinair_relHum
+Cabinair_absHum

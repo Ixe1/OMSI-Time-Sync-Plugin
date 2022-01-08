@@ -268,7 +268,7 @@
             this.lblVersionAuthorInfo.Name = "lblVersionAuthorInfo";
             this.lblVersionAuthorInfo.Size = new System.Drawing.Size(100, 39);
             this.lblVersionAuthorInfo.TabIndex = 14;
-            this.lblVersionAuthorInfo.Text = "Version 1.05\r\nCreated by Ixel";
+            this.lblVersionAuthorInfo.Text = "Version 1.10\r\nCreated by Ixel";
             this.lblVersionAuthorInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblVersionAuthorInfo.UseCompatibleTextRendering = true;
             // 
@@ -276,9 +276,10 @@
             // 
             this.lnkDonate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lnkDonate.AutoSize = true;
-            this.lnkDonate.Location = new System.Drawing.Point(266, 190);
+            this.lnkDonate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lnkDonate.Location = new System.Drawing.Point(256, 190);
             this.lnkDonate.Name = "lnkDonate";
-            this.lnkDonate.Size = new System.Drawing.Size(271, 17);
+            this.lnkDonate.Size = new System.Drawing.Size(281, 17);
             this.lnkDonate.TabIndex = 15;
             this.lnkDonate.TabStop = true;
             this.lnkDonate.Text = "Like this program? Consider making a small donation";
@@ -289,9 +290,10 @@
             // lnkGithub
             // 
             this.lnkGithub.AutoSize = true;
+            this.lnkGithub.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lnkGithub.Location = new System.Drawing.Point(12, 190);
             this.lnkGithub.Name = "lnkGithub";
-            this.lnkGithub.Size = new System.Drawing.Size(38, 13);
+            this.lnkGithub.Size = new System.Drawing.Size(44, 13);
             this.lnkGithub.TabIndex = 16;
             this.lnkGithub.TabStop = true;
             this.lnkGithub.Text = "Github";
@@ -327,7 +329,7 @@
             // chkManualSyncHotkeySound
             // 
             this.chkManualSyncHotkeySound.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkManualSyncHotkeySound.BackgroundImage = global::OmsiTimeSyncPlugin.Properties.Resources.volume_mute;
+            this.chkManualSyncHotkeySound.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("chkManualSyncHotkeySound.BackgroundImage")));
             this.chkManualSyncHotkeySound.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.chkManualSyncHotkeySound.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkManualSyncHotkeySound.Location = new System.Drawing.Point(342, 162);
@@ -341,7 +343,7 @@
             // 
             // picLogo
             // 
-            this.picLogo.BackgroundImage = global::OmsiTimeSyncPlugin.Properties.Resources.school_bus_1759;
+            this.picLogo.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("picLogo.BackgroundImage")));
             this.picLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.picLogo.Location = new System.Drawing.Point(394, 12);
             this.picLogo.Name = "picLogo";
@@ -397,6 +399,7 @@
             this.Text = "OMSI Time Sync";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
+            this.LocationChanged += new System.EventHandler(this.frmMain_LocationChanged);
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

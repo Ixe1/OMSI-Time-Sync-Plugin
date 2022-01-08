@@ -231,7 +231,7 @@ namespace OmsiTimeSyncPlugin
                 AppConfig.manualSyncHotkeySound = AppConfigDefaults.manualSyncHotkeySound;
                 AppConfig.autoDetectOffsetHours = AppConfigDefaults.autoDetectOffsetHours;
 
-                return false; 
+                return false;
             }
         }
 
@@ -313,6 +313,9 @@ namespace OmsiTimeSyncPlugin
                     lblSystemTime.Text = "Waiting for OMSI map...";
                 }
             }
+
+            // TODO: Detect new map loading if OMSI already loaded another map previously (for auto detecting time offset)
+
 
             if (!AppConfig.autoDetectOffsetHours)
             {
@@ -558,7 +561,7 @@ namespace OmsiTimeSyncPlugin
                     "\n" +
                     "It's important that you close any games that have anti-cheat protection before pressing 'Yes'! This program performs memory editing which might be falsely flagged as a hack.\n" +
                     "\n" +
-                    "This notice will not be shown again unless the 'OmsiTimeSync.cfg' file is deleted in OMSI's plugin directory. The author of this program will not be liable.\n" +
+                    "This notice will not be shown again unless the 'OmsiTimeSync.cfg' file is deleted in OMSI's directory. The author of this program will not be liable.\n" +
                     "\n" +
                     "While this is a free program, a donation is highly appreciated if you like this program.\n" +
                     "\n" +
@@ -581,8 +584,8 @@ namespace OmsiTimeSyncPlugin
 
             // v2.3.004
             // Date/Time
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("hour", "0x0046176C"));     // int (h)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("minute", "0x0046176D"));   // int (m)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("hour", "0x0046176C"));     // byte (h)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("minute", "0x0046176D"));   // byte (m)
             Omsi.addMemoryAddress("2.3.004", new OmsiAddress("second", "0x00461770"));   // float (second.millisecond)
             Omsi.addMemoryAddress("2.3.004", new OmsiAddress("year", "0x00461790"));     // int (yyyy)
             Omsi.addMemoryAddress("2.3.004", new OmsiAddress("month", "0x0046178C"));    // int (m)
@@ -590,8 +593,8 @@ namespace OmsiTimeSyncPlugin
 
             // v2.2.032
             // Date/Time
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("hour", "0x00461768"));     // int (h)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("minute", "0x00461769"));   // int (m)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("hour", "0x00461768"));     // byte (h)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("minute", "0x00461769"));   // byte (m)
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("second", "0x0046176C"));   // float (second.millisecond)
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("year", "0x0046178C"));     // int (yyyy)
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("month", "0x00461788"));    // int (m)
@@ -604,15 +607,22 @@ namespace OmsiTimeSyncPlugin
         // Form closing event
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Set current window position in app's config
-            AppConfig.windowPositionTop = Top;
-            AppConfig.windowPositionLeft = Left;
-
             // If the timer is enabled
             if (tmrOMSI.Enabled)
             {
                 // Save app config
                 saveConfig();
+            }
+        }
+
+        private void frmMain_LocationChanged(object sender, EventArgs e)
+        {
+            // If the timer is enabled
+            if (tmrOMSI.Enabled)
+            {
+                // Set current window position in app's config
+                AppConfig.windowPositionTop = Top;
+                AppConfig.windowPositionLeft = Left;
             }
         }
     }
