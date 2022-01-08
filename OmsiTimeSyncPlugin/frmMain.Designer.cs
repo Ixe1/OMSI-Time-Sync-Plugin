@@ -216,6 +216,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Enabled = false;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 165);
             this.label1.Name = "label1";
@@ -227,6 +228,7 @@
             // cmbManualSyncHotkey
             // 
             this.cmbManualSyncHotkey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbManualSyncHotkey.Enabled = false;
             this.cmbManualSyncHotkey.FormattingEnabled = true;
             this.cmbManualSyncHotkey.Location = new System.Drawing.Point(185, 162);
             this.cmbManualSyncHotkey.Name = "cmbManualSyncHotkey";
@@ -331,6 +333,7 @@
             this.chkManualSyncHotkeySound.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkManualSyncHotkeySound.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("chkManualSyncHotkeySound.BackgroundImage")));
             this.chkManualSyncHotkeySound.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.chkManualSyncHotkeySound.Enabled = false;
             this.chkManualSyncHotkeySound.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkManualSyncHotkeySound.Location = new System.Drawing.Point(342, 162);
             this.chkManualSyncHotkeySound.Name = "chkManualSyncHotkeySound";

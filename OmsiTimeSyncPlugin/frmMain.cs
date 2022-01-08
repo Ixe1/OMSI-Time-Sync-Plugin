@@ -35,9 +35,6 @@ namespace OmsiTimeSyncPlugin
         // For accessing or writing to OMSI's memory
         public Mem m;
 
-        // For hotkey support
-        OmsiTimeSyncPluginMisc.globalKeyboardHook gkhManualSyncHotkey = new OmsiTimeSyncPluginMisc.globalKeyboardHook();
-
         // Hours difference for auto detecting offset time
         public double hoursDifference = 0.0;
 
@@ -441,34 +438,21 @@ namespace OmsiTimeSyncPlugin
         private void cmbManualSyncHotkey_SelectedIndexChanged(object sender, EventArgs e)
         {
             // If there are already hotkeys being monitored
-            if (gkhManualSyncHotkey.HookedKeys.Count > 0)
-            {
-                // Clear them
-                gkhManualSyncHotkey.HookedKeys.Clear();
-            }
+            //if (gkhManualSyncHotkey.HookedKeys.Count > 0)
+            //{
+            //    // Clear them
+            //    gkhManualSyncHotkey.HookedKeys.Clear();
+            //}
 
             // If the hotkey preference isn't 'none'
-            if ((Keys)cmbManualSyncHotkey.SelectedItem != Keys.None)
-            {
-                // Add the hotkey to be monitored
-                gkhManualSyncHotkey.HookedKeys.Add((Keys)cmbManualSyncHotkey.SelectedItem);
-            }
+            //if ((Keys)cmbManualSyncHotkey.SelectedItem != Keys.None)
+            //{
+            //    // Add the hotkey to be monitored
+            //    gkhManualSyncHotkey.HookedKeys.Add((Keys)cmbManualSyncHotkey.SelectedItem);
+            //}
 
             // If the dropdown list is visible then apply the current choice from the dropdown list to the app's config
             if (cmbManualSyncHotkey.Visible) AppConfig.manualSyncHotkeyIndex = cmbManualSyncHotkey.SelectedIndex;
-        }
-
-        // For when the manual sync hotkey is pressed (well, released)
-        private void manualSyncHotkey_KeyUp(object sender, KeyEventArgs e)
-        {
-            // Sync OMSI time with actual time, if possible
-            syncOmsiTime();
-
-            // Play sound to indicate that the hotkey press was acknowledged by the program, if enabled
-            if (AppConfig.manualSyncHotkeySound)
-            {
-                SystemSounds.Asterisk.Play();
-            }
         }
 
         // For handling the manual sync hotkey sound setting
@@ -547,7 +531,7 @@ namespace OmsiTimeSyncPlugin
             chkAutoDetectOffsetTime.Checked = AppConfig.autoDetectOffsetHours;
 
             // Add 'key released' event for manual sync hotkey
-            gkhManualSyncHotkey.KeyUp += new KeyEventHandler(manualSyncHotkey_KeyUp);
+            //gkhManualSyncHotkey.KeyUp += new KeyEventHandler(manualSyncHotkey_KeyUp);
 
             // Show manual sync hotkey dropdown menu
             cmbManualSyncHotkey.Visible = true;
