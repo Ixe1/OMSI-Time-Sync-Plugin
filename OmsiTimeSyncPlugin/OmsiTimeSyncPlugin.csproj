@@ -68,7 +68,6 @@
     <Compile Include="frmMain.designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="globalKeyboardHook.cs" />
     <Compile Include="ISynchronizeInvokeExtensions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Mem.cs" />

@@ -93,11 +93,32 @@ namespace OmsiTimeSyncPlugin
             
         }
 
-        // Not used at the moment
+        // OMSI system variables
         [DllExport(CallingConvention.StdCall)]
         public static void AccessSystemVariable(byte variableIndex, ref float value, ref bool writeValue)
         {
+            writeValue = false;
 
+            switch (variableIndex)
+            {
+                case 0:
+                    // Pause
+
+                    // Get current value
+                    OmsiTelemetry.isPaused = value;
+
+                    // If the plugin wants to pause or resume OMSI
+                    if (OmsiTelemetry.setIsPaused != -1.0f)
+                    {
+                        // Set the state in OMSI accordingly
+                        value = OmsiTelemetry.setIsPaused;
+                        writeValue = true;
+
+                        // Reset pending action/change so it doesn't get repeatedly applied
+                        OmsiTelemetry.setIsPaused = -1.0f;
+                    }
+                    break;
+            }
         }
     }
 
@@ -106,11 +127,19 @@ namespace OmsiTimeSyncPlugin
     {
         public static bool omsiClosing = false;
 
+        // Varlist
         public static float busSpeedKph = 0.0f;
         public static float scheduleActive = 0.0f;
         public static float humansCount = 0.0f;
         public static float cabinAirTemp = 0.0f;
         public static float cabinAirRelHum = 0.0f;
         public static float cabinAirAbsHum = 0.0f;
+
+        // Systemvarlist
+        public static float isPaused = 0.0f;
+
+        // Pending actions/changes
+        // Any value other than -1.0f indicates a change is needed at the next opportunity
+        public static float setIsPaused = -1.0f;
     }
 }

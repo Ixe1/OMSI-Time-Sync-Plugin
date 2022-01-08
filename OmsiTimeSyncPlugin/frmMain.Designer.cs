@@ -40,8 +40,6 @@
             this.chkOnlyResyncOmsiTimeIfBehindActualTime = new System.Windows.Forms.CheckBox();
             this.lblHeaderOmsiOffsetHours = new System.Windows.Forms.Label();
             this.cmbOffsetHours = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.cmbManualSyncHotkey = new System.Windows.Forms.ComboBox();
             this.chkAlwaysOnTop = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.lblVersionAuthorInfo = new System.Windows.Forms.Label();
@@ -49,7 +47,6 @@
             this.lnkGithub = new System.Windows.Forms.LinkLabel();
             this.cmbAutoSyncMode = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.chkManualSyncHotkeySound = new System.Windows.Forms.CheckBox();
             this.picLogo = new System.Windows.Forms.PictureBox();
             this.chkAutoDetectOffsetTime = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
@@ -213,30 +210,6 @@
             this.cmbOffsetHours.TabIndex = 9;
             this.cmbOffsetHours.SelectedIndexChanged += new System.EventHandler(this.cmbOffsetHours_SelectedIndexChanged);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Enabled = false;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 165);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(115, 17);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "Manual Sync Hotkey:";
-            this.label1.UseCompatibleTextRendering = true;
-            // 
-            // cmbManualSyncHotkey
-            // 
-            this.cmbManualSyncHotkey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbManualSyncHotkey.Enabled = false;
-            this.cmbManualSyncHotkey.FormattingEnabled = true;
-            this.cmbManualSyncHotkey.Location = new System.Drawing.Point(185, 162);
-            this.cmbManualSyncHotkey.Name = "cmbManualSyncHotkey";
-            this.cmbManualSyncHotkey.Size = new System.Drawing.Size(151, 21);
-            this.cmbManualSyncHotkey.TabIndex = 11;
-            this.cmbManualSyncHotkey.Visible = false;
-            this.cmbManualSyncHotkey.SelectedIndexChanged += new System.EventHandler(this.cmbManualSyncHotkey_SelectedIndexChanged);
-            // 
             // chkAlwaysOnTop
             // 
             this.chkAlwaysOnTop.AutoSize = true;
@@ -307,10 +280,11 @@
             this.cmbAutoSyncMode.FormattingEnabled = true;
             this.cmbAutoSyncMode.Items.AddRange(new object[] {
             "Always, every second",
-            "(Plugin) When bus is moving",
-            "(Plugin) When bus is not moving",
-            "(Plugin) When bus has a timetable",
-            "(Plugin) When bus has no timetable"});
+            "When bus is moving",
+            "When bus is not moving",
+            "When bus has a timetable",
+            "When bus has no timetable",
+            "When game is paused"});
             this.cmbAutoSyncMode.Location = new System.Drawing.Point(126, 108);
             this.cmbAutoSyncMode.Name = "cmbAutoSyncMode";
             this.cmbAutoSyncMode.Size = new System.Drawing.Size(210, 21);
@@ -327,22 +301,6 @@
             this.label4.TabIndex = 18;
             this.label4.Text = "Auto Sync Mode:";
             this.label4.UseCompatibleTextRendering = true;
-            // 
-            // chkManualSyncHotkeySound
-            // 
-            this.chkManualSyncHotkeySound.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkManualSyncHotkeySound.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("chkManualSyncHotkeySound.BackgroundImage")));
-            this.chkManualSyncHotkeySound.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.chkManualSyncHotkeySound.Enabled = false;
-            this.chkManualSyncHotkeySound.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkManualSyncHotkeySound.Location = new System.Drawing.Point(342, 162);
-            this.chkManualSyncHotkeySound.Name = "chkManualSyncHotkeySound";
-            this.chkManualSyncHotkeySound.Size = new System.Drawing.Size(27, 21);
-            this.chkManualSyncHotkeySound.TabIndex = 21;
-            this.chkManualSyncHotkeySound.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.chkManualSyncHotkeySound.UseCompatibleTextRendering = true;
-            this.chkManualSyncHotkeySound.UseVisualStyleBackColor = false;
-            this.chkManualSyncHotkeySound.CheckedChanged += new System.EventHandler(this.chkManualSyncHotkeySound_CheckedChanged);
             // 
             // picLogo
             // 
@@ -374,7 +332,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(546, 211);
             this.Controls.Add(this.chkAutoDetectOffsetTime);
-            this.Controls.Add(this.chkManualSyncHotkeySound);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.cmbAutoSyncMode);
             this.Controls.Add(this.lnkGithub);
@@ -382,8 +339,6 @@
             this.Controls.Add(this.lblVersionAuthorInfo);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.chkAlwaysOnTop);
-            this.Controls.Add(this.cmbManualSyncHotkey);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbOffsetHours);
             this.Controls.Add(this.lblHeaderOmsiOffsetHours);
             this.Controls.Add(this.chkOnlyResyncOmsiTimeIfBehindActualTime);
@@ -422,8 +377,6 @@
         private System.Windows.Forms.CheckBox chkOnlyResyncOmsiTimeIfBehindActualTime;
         private System.Windows.Forms.Label lblHeaderOmsiOffsetHours;
         private System.Windows.Forms.ComboBox cmbOffsetHours;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox cmbManualSyncHotkey;
         private System.Windows.Forms.CheckBox chkAlwaysOnTop;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblVersionAuthorInfo;
@@ -431,7 +384,6 @@
         private System.Windows.Forms.LinkLabel lnkGithub;
         private System.Windows.Forms.ComboBox cmbAutoSyncMode;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox chkManualSyncHotkeySound;
         private System.Windows.Forms.CheckBox chkAutoDetectOffsetTime;
     }
 }

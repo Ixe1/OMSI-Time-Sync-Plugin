@@ -10,3 +10,7 @@ humans_count
 Cabinair_Temp
 Cabinair_relHum
 Cabinair_absHum
+
+[systemvarlist]
+1
+Pause

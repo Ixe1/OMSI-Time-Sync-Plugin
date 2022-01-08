@@ -19,7 +19,6 @@ namespace OmsiTimeSyncPlugin
         [DllImport("user32")]
         public static extern bool EnableMenuItem(IntPtr hMenu, uint itemId, uint uEnable);
 
-
         public DateTime omsiTime = DateTime.MinValue;
         public DateTime systemTime;
 
@@ -134,6 +133,7 @@ namespace OmsiTimeSyncPlugin
                         // 2  - Only when bus is not moving
                         // 3  - Only when bus has a timetable
                         // 4  - Only when bus has no timetable
+                        // 5  - Only when game is paused
                         if (
                             AppConfig.autoSyncModeIndex == 0 ||
                             (
@@ -151,6 +151,10 @@ namespace OmsiTimeSyncPlugin
                             (
                              AppConfig.autoSyncModeIndex == 4 &&
                              OmsiTelemetry.scheduleActive == 0
+                            ) ||
+                            (
+                             AppConfig.autoSyncModeIndex == 5 &&
+                             OmsiTelemetry.isPaused == 1
                             )
                            )
                         {
@@ -167,6 +171,7 @@ namespace OmsiTimeSyncPlugin
 
                             // Game needs to be paused momentarily to prevent BCS thinking time is going backwards if near the end of the current minute or hour
                             // TODO: Check the following conditional statement works before implementing a brief pause
+                            //if (OmsiTelemetry.isPaused == 1.0f && OmsiTelemetry.setIsPaused == -1.0f)
 
                             // If current OMSI second is less than 55 then it's safe to increment time (this is due to BCS thinking time is going backwards otherwise)
                             // Apply the new date and time in OMSI by modifying some of the addresses in memory
@@ -179,7 +184,13 @@ namespace OmsiTimeSyncPlugin
                                 m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "day"), "int", newSystemTime.Day.ToString());
                                 m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "month"), "int", newSystemTime.Month.ToString());
                                 m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "year"), "int", newSystemTime.Year.ToString());
+
+                                //OmsiTelemetry.setIsPaused = 0.0f;
                             }
+                            //else if (OmsiTelemetry.isPaused == 0.0f && OmsiTelemetry.setIsPaused == -1.0f)
+                            //{
+                            //    OmsiTelemetry.setIsPaused = 1.0f;
+                            //}
                         }
                     }
 
@@ -261,29 +272,18 @@ namespace OmsiTimeSyncPlugin
         // Timer that runs every 1 second
         private void tmrOMSI_Tick(object sender, EventArgs e)
         {
-            // Search for Omsi.exe process
-            int processID = Process.GetCurrentProcess().Id;
-
             // If process isn't already attached
             if (!processAttached)
             {
+                // Search for Omsi.exe process
+                int processID = Process.GetCurrentProcess().Id;
+
                 // If a process was found
                 if (processID > 0)
                 {
                     // Attach to the process
                     processAttached = m.OpenProcess(processID);
                 }
-            }
-
-            // If a process can't be found and one is attached
-            if (processID <= 0 && processAttached)
-            {
-                // De-attach process
-                processAttached = false;
-
-                omsiVersion = "Unknown";
-
-                m.CloseProcess();
             }
 
             // If auto detection of offset hours is enabled then:
@@ -364,7 +364,32 @@ namespace OmsiTimeSyncPlugin
                 }
 
                 // If getOmsiTime() is true then OMSI is loaded into a map with a valid date and time
-                omsiLoaded = getOmsiTime();
+                //omsiLoaded = getOmsiTime();
+                try
+                {
+                    // Open logfile.txt but allow other applications to still read/write to the logfile.txct file
+                    using (var fs = new FileStream("logfile.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x1000, FileOptions.SequentialScan))
+                    using (var sr = new StreamReader(fs, Encoding.UTF8))
+                    {
+                        string line;
+
+                        // Iterate through each line
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            // This indicates OMSI has loaded a map
+                            if (line.Contains("Information: Map loaded"))
+                            {
+                                omsiLoaded = true;
+                            }
+                            // This indicates OMSI has unloaded a map
+                            else if (line.Contains("Information: Actual map closed!"))
+                            {
+                                omsiLoaded = false;
+                            }
+                        }
+                    }
+                }
+                catch { return; }
 
                 // If OMSI isn't loaded into a map
                 if (!omsiLoaded)
@@ -422,7 +447,6 @@ namespace OmsiTimeSyncPlugin
             TopMost = chkAlwaysOnTop.Checked;
         }
 
-
         // For manually syncing OMSI's time when pressing the button on the UI
         private void btnManualSyncOmsiTime_Click(object sender, EventArgs e)
         {
@@ -432,42 +456,6 @@ namespace OmsiTimeSyncPlugin
                 // Show an error message stating that it failed for some reason
                 MessageBox.Show("ERROR: Unable to sync OMSI time. Please check that OMSI is running and a map has been loaded.", "OMSI Time Sync - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        // For handling the manual sync hotkey setting
-        private void cmbManualSyncHotkey_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // If there are already hotkeys being monitored
-            //if (gkhManualSyncHotkey.HookedKeys.Count > 0)
-            //{
-            //    // Clear them
-            //    gkhManualSyncHotkey.HookedKeys.Clear();
-            //}
-
-            // If the hotkey preference isn't 'none'
-            //if ((Keys)cmbManualSyncHotkey.SelectedItem != Keys.None)
-            //{
-            //    // Add the hotkey to be monitored
-            //    gkhManualSyncHotkey.HookedKeys.Add((Keys)cmbManualSyncHotkey.SelectedItem);
-            //}
-
-            // If the dropdown list is visible then apply the current choice from the dropdown list to the app's config
-            if (cmbManualSyncHotkey.Visible) AppConfig.manualSyncHotkeyIndex = cmbManualSyncHotkey.SelectedIndex;
-        }
-
-        // For handling the manual sync hotkey sound setting
-        private void chkManualSyncHotkeySound_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkManualSyncHotkeySound.Checked)
-            {
-                chkManualSyncHotkeySound.BackgroundImage = Properties.Resources.volume;
-            }
-            else
-            {
-                chkManualSyncHotkeySound.BackgroundImage = Properties.Resources.volume_mute;
-            }
-
-            AppConfig.manualSyncHotkeySound = chkManualSyncHotkeySound.Checked;
         }
 
         // For handling the auto sync mode setting
@@ -515,26 +503,18 @@ namespace OmsiTimeSyncPlugin
                 Left = AppConfig.windowPositionLeft;
             }
 
-            // Get a list of potential hotkeys to choose from for the manual sync hotkey
-            cmbManualSyncHotkey.DataSource = Enum.GetValues(typeof(Keys));
-
             // Setup the dropdown lists so they are configured based on the app's config
             cmbOffsetHours.SelectedIndex = AppConfig.offsetHourIndex;
-            cmbManualSyncHotkey.SelectedIndex = AppConfig.manualSyncHotkeyIndex;
             cmbAutoSyncMode.SelectedIndex = AppConfig.autoSyncModeIndex;
 
             // Same with checkboxes
             chkAlwaysOnTop.Checked = AppConfig.alwaysOnTop;
             chkAutoSyncOmsiTime.Checked = AppConfig.autoSyncOmsiTime;
             chkOnlyResyncOmsiTimeIfBehindActualTime.Checked = AppConfig.onlyResyncOmsiTimeIfBehindActualTime;
-            chkManualSyncHotkeySound.Checked = AppConfig.manualSyncHotkeySound;
             chkAutoDetectOffsetTime.Checked = AppConfig.autoDetectOffsetHours;
 
             // Add 'key released' event for manual sync hotkey
             //gkhManualSyncHotkey.KeyUp += new KeyEventHandler(manualSyncHotkey_KeyUp);
-
-            // Show manual sync hotkey dropdown menu
-            cmbManualSyncHotkey.Visible = true;
 
             // If OmsiTimeSync.cfg doesn't exist
             if (!File.Exists("OmsiTimeSync.cfg"))
