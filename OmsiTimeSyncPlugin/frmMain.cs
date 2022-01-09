@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Media;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,6 +13,17 @@ namespace OmsiTimeSyncPlugin
 {
     public partial class frmMain : Form
     {
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CS_DROPSHADOW = 0x20000;
+                CreateParams cp = base.CreateParams;
+                cp.ClassStyle |= CS_DROPSHADOW;
+                return cp;
+            }
+        }
+
         [DllImport("user32")]
         public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 
@@ -21,6 +32,8 @@ namespace OmsiTimeSyncPlugin
 
         public DateTime omsiTime = DateTime.MinValue;
         public DateTime systemTime;
+
+        private byte[] omsiTimeDateBytes = new byte[39];
 
         // Is OMSI loaded into a map?
         public bool omsiLoaded = false;
@@ -36,6 +49,14 @@ namespace OmsiTimeSyncPlugin
 
         // Hours difference for auto detecting offset time
         public double hoursDifference = 0.0;
+
+        // For moving the form UI around the screen
+        public bool isFormBeingDragged = false;
+        public Point picPointClicked;
+
+        // Timers on different threads from the UI
+        public System.Threading.Timer tmrAutoSave;
+        public System.Threading.Timer tmrBackground;
 
         public frmMain()
         {
@@ -76,7 +97,7 @@ namespace OmsiTimeSyncPlugin
 
                             case "E7515B2A2124AD2BF10CA4007D7A0689":
                             case "656C9ED8E87BE60744F55E14A43CEA0E":
-                                return "2.2.32";
+                                return "2.2.032";
                         }
                     }
                 }
@@ -93,15 +114,24 @@ namespace OmsiTimeSyncPlugin
         {
             if (processAttached)
             {
-                // dd/mm/yyyy hh:mm:ss
-                string dateStr = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "day")).ToString("D2") + "/" + 
-                    m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "month")).ToString("D2") + "/" + 
-                    m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "year")).ToString("D4") + " " + 
-                    m.ReadByte(Omsi.getMemoryAddress(omsiVersion, "hour")).ToString("D2") + ":" + 
-                    m.ReadByte(Omsi.getMemoryAddress(omsiVersion, "minute")).ToString("D2") + ":" + 
-                    ((int)Math.Max(0, Math.Min(59, Math.Ceiling(m.ReadFloat(Omsi.getMemoryAddress(omsiVersion, "second")))))).ToString("D2");
+                try
+                {
+                    omsiTimeDateBytes = m.ReadBytes(Omsi.getMemoryAddress(omsiVersion, "hour"), 40);
 
-                return DateTime.TryParse(dateStr, out omsiTime);
+                    int i = 0;
+                    string dateStr = "";
+                    // HH:mm:ss.ms dd/MM/YYYY
+                    dateStr = dateStr + (int)omsiTimeDateBytes[i] + ":"; i++;                       // Hour
+                    dateStr = dateStr + (int)omsiTimeDateBytes[i] + ":"; i += 3;                    // Minute
+                    dateStr = dateStr + BitConverter.ToSingle(omsiTimeDateBytes, i) + " "; i += 8;  // Second.Millisecond
+                    dateStr = dateStr + BitConverter.ToInt32(omsiTimeDateBytes, i) + "/"; i += 20;  // Day
+                    dateStr = dateStr + BitConverter.ToInt32(omsiTimeDateBytes, i) + "/"; i += 4;   // Month
+                    dateStr = dateStr + BitConverter.ToInt32(omsiTimeDateBytes, i);                 // Year
+                
+
+                    return DateTime.TryParse(dateStr, out omsiTime);
+                }
+                catch { }
             }
 
             return false;
@@ -165,32 +195,25 @@ namespace OmsiTimeSyncPlugin
                             if (AppConfig.onlyResyncOmsiTimeIfBehindActualTime)
                             {
                                 // If only resync OMSI time if behind actual time is enabled then:
-                                // - Add three seconds to the system time retrieved a moment ago
-                                newSystemTime = newSystemTime.AddSeconds(3.0);
+                                // - Add two seconds to the system time retrieved a moment ago
+                                newSystemTime = newSystemTime.AddSeconds(2.0);
                             }
 
-                            // Game needs to be paused momentarily to prevent BCS thinking time is going backwards if near the end of the current minute or hour
-                            // TODO: Check the following conditional statement works before implementing a brief pause
-                            //if (OmsiTelemetry.isPaused == 1.0f && OmsiTelemetry.setIsPaused == -1.0f)
+                            // 09 39 00 00 BB 2F 15 41 09 00 00 00 09 00 00 00 00 00 00 00 94 A5 00 24 00 00 00 00 00 00 00 00 01 00 00 00 E6 07 00 00
+                            // Hour, Minute, Second, Day, Month, Year
+                            // Byte, Byte,   Float,  Int, Int,   Int
+                            // The following should be compatible with latest OMSI, untested on 'tram'
+                            int i = 0;
+                            byte[] writeBytes = omsiTimeDateBytes;
+                            writeBytes[i] = Convert.ToByte(newSystemTime.Hour); i++; // 0 - 1
+                            writeBytes[i] = Convert.ToByte(newSystemTime.Minute); i += 3; // 1 - 4
+                            BitConverter.GetBytes(Convert.ToSingle(newSystemTime.Second + "." + newSystemTime.Millisecond)).CopyTo(writeBytes, i); i += 8; // 4 - 12
+                            BitConverter.GetBytes(newSystemTime.Day).CopyTo(writeBytes, i); i += 20; // 12 - 32
+                            BitConverter.GetBytes(newSystemTime.Month).CopyTo(writeBytes, i); i += 4; // 32 - 36
+                            BitConverter.GetBytes(newSystemTime.Year).CopyTo(writeBytes, i); // 35 - 39
 
-                            // If current OMSI second is less than 55 then it's safe to increment time (this is due to BCS thinking time is going backwards otherwise)
-                            // Apply the new date and time in OMSI by modifying some of the addresses in memory
-                            if (omsiTime.Second < 55)
-                            {
-                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "hour"), "byte", newSystemTime.Hour.ToString());
-                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "minute"), "byte", newSystemTime.Minute.ToString());
-                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "second"), "float", newSystemTime.Second.ToString() + "." + newSystemTime.Millisecond.ToString());
-
-                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "day"), "int", newSystemTime.Day.ToString());
-                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "month"), "int", newSystemTime.Month.ToString());
-                                m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "year"), "int", newSystemTime.Year.ToString());
-
-                                //OmsiTelemetry.setIsPaused = 0.0f;
-                            }
-                            //else if (OmsiTelemetry.isPaused == 0.0f && OmsiTelemetry.setIsPaused == -1.0f)
-                            //{
-                            //    OmsiTelemetry.setIsPaused = 1.0f;
-                            //}
+                            // Set the new date and time
+                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "hour"), "bytes", writeBytes);
                         }
                     }
 
@@ -269,8 +292,14 @@ namespace OmsiTimeSyncPlugin
             catch { return false; }
         }
 
-        // Timer that runs every 1 second
-        private void tmrOMSI_Tick(object sender, EventArgs e)
+        // Background timer that runs every 60 seconds
+        private void tmrAutoSave_Tick(object state)
+        {
+            saveConfig();
+        }
+
+        // Background timer that runs every 1 second
+        private void tmrBackground_Tick(object state)
         {
             // If process isn't already attached
             if (!processAttached)
@@ -311,9 +340,6 @@ namespace OmsiTimeSyncPlugin
                 }
             }
 
-            // TODO: Detect new map loading if OMSI already loaded another map previously (for auto detecting time offset)
-
-
             if (!AppConfig.autoDetectOffsetHours)
             {
                 // Adjust the actual time by the number of 'offset hours' that is set in the UI
@@ -343,6 +369,8 @@ namespace OmsiTimeSyncPlugin
                 // Further code execution stops here until the version can be identified
                 if (omsiVersion == "Unknown")
                 {
+                    resetFormTitleBarValues();
+
                     return;
                 }
 
@@ -352,19 +380,17 @@ namespace OmsiTimeSyncPlugin
                     omsiLoaded = false;
 
                     lblOmsiTime.Text = "OMSI version '" + omsiVersion + "' is not supported";
-                    lblOmsiTime.ForeColor = System.Drawing.Color.Red;
+                    lblOmsiTime.ForeColor = Color.Red;
 
                     return;
                 }
                 
                 // If OMSI time text isn't 'ControlText' colour then make it so again
-                if (lblOmsiTime.ForeColor != System.Drawing.SystemColors.ControlText)
+                if (lblOmsiTime.ForeColor != SystemColors.ControlText)
                 {
-                    lblOmsiTime.ForeColor = System.Drawing.SystemColors.ControlText;
+                    lblOmsiTime.ForeColor = SystemColors.ControlText;
                 }
 
-                // If getOmsiTime() is true then OMSI is loaded into a map with a valid date and time
-                //omsiLoaded = getOmsiTime();
                 try
                 {
                     // Open logfile.txt but allow other applications to still read/write to the logfile.txct file
@@ -394,6 +420,8 @@ namespace OmsiTimeSyncPlugin
                 // If OMSI isn't loaded into a map
                 if (!omsiLoaded)
                 {
+                    resetFormTitleBarValues();
+
                     // Indicate that OMSI is running but isn't loaded into a map yet
                     lblOmsiTime.Text = "OMSI is running, waiting for a map to load!";
 
@@ -407,16 +435,118 @@ namespace OmsiTimeSyncPlugin
                     // Go ahead with syncing OMSI time
                     syncOmsiTime();
                 }
+                else
+                {
+                    getOmsiTime();
+                }
+
+                if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
+                {
+                    formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph * 0.6213711922).ToString().PadRight(3) + "MPH";
+                }
+                else if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("KMH"))
+                {
+                    formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph).ToString().PadRight(3) + "KMH";
+                }
+
+                formTitleBarCurrentOmsiTime.Text = omsiTime.ToString("HH:mm:ss");
+
+                string omsiDelayStr = "-";
+                int omsiDelay = 0;
+
+                if (OmsiTelemetry.scheduleActive == 1.0f)
+                {
+                    try
+                    {
+                        int firstValue = m.ReadInt(0x00461500, true);
+                        int secondValue = m.ReadInt(firstValue + 0x6BC, false);
+
+                        omsiDelay = secondValue;
+
+                        TimeSpan omsiDelayTime = TimeSpan.FromSeconds(omsiDelay);
+
+                        omsiDelayStr = string.Format("{0:D2}:{1:D2}", (int)Math.Abs(omsiDelayTime.TotalMinutes), Math.Abs(omsiDelayTime.Seconds));
+                    }
+                    catch { omsiDelayStr = "-"; omsiDelay = 0; }
+                }
+                else
+                {
+                    omsiDelayStr = "-";
+                    omsiDelay = 0;
+                }
+
+                if (omsiDelay < 0) formTitleBarCurrentOmsiDelay.ForeColor = Color.FromArgb(192, 255, 192);
+                else if (omsiDelay > 0) formTitleBarCurrentOmsiDelay.ForeColor = Color.FromArgb(255, 192, 192);
+                else formTitleBarCurrentOmsiDelay.ForeColor = Color.White;
+
+                if (omsiDelay < 0 && omsiDelayStr != "-") formTitleBarCurrentOmsiDelay.Text = "-" + omsiDelayStr;
+                else if (omsiDelay >= 0 && omsiDelayStr != "-") formTitleBarCurrentOmsiDelay.Text = "+" + omsiDelayStr;
+                else formTitleBarCurrentOmsiDelay.Text = "-";
 
                 // State the current date and time of OMSI in the UI
                 lblOmsiTime.Text = omsiTime.ToString();
+
+                //try
+                //{
+                //    TextWriter txtWtr = new StreamWriter("omsitimesync.log");
+                //
+                //    int x = 0;
+                //
+                //    txtWtr.WriteLine("VARS:");
+                //
+                //    foreach (float line in Main.vars)
+                //    {
+                //        txtWtr.WriteLine(x.ToString().PadRight(5) + line.ToString()); x++;
+                //    }
+                //
+                //    x = 0;
+                //
+                //    txtWtr.WriteLine("");
+                //    txtWtr.WriteLine("SYS VARS:");
+                //
+                //    foreach (float line in Main.sysVars)
+                //    {
+                //        txtWtr.WriteLine(x.ToString().PadRight(5) + line.ToString()); x++;
+                //    }
+                //
+                //    x = 0;
+                //
+                //    txtWtr.WriteLine("");
+                //    txtWtr.WriteLine("STRING VARS:");
+                //
+                //    foreach (string line in Main.stringVars)
+                //    {
+                //        txtWtr.WriteLine(x.ToString().PadRight(5) + line); x++;
+                //    }
+                //
+                //    x = 0;
+                //
+                //    txtWtr.Close();
+                //}
+                //catch { }
             }
             else
             {
                 // State that 'OMSI is not running' in the UI
                 lblOmsiTime.Text = "OMSI is not running!";
-                lblOmsiTime.ForeColor = System.Drawing.Color.Red;
+                lblOmsiTime.ForeColor = Color.Red;
             }
+        }
+
+        private void resetFormTitleBarValues()
+        {
+            if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
+            {
+                formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph * 0.6213711922).ToString().PadRight(3) + "MPH";
+            }
+            else if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("KMH"))
+            {
+                formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph).ToString().PadRight(3) + "KMH";
+            }
+
+            formTitleBarCurrentOmsiTime.Text = "-";
+            formTitleBarCurrentOmsiDelay.Text = "-";
+            formTitleBarCurrentOmsiDelay.ForeColor = Color.White;
         }
 
         // For handling the state of auto syncing OMSI time
@@ -438,13 +568,6 @@ namespace OmsiTimeSyncPlugin
         {
             AppConfig.offsetHour = Convert.ToInt32(cmbOffsetHours.SelectedItem);
             AppConfig.offsetHourIndex = cmbOffsetHours.SelectedIndex;
-        }
-
-        // For handling the state of 'always on top'
-        private void chkAlwaysOnTop_CheckedChanged(object sender, EventArgs e)
-        {
-            AppConfig.alwaysOnTop = chkAlwaysOnTop.Checked;
-            TopMost = chkAlwaysOnTop.Checked;
         }
 
         // For manually syncing OMSI's time when pressing the button on the UI
@@ -508,10 +631,14 @@ namespace OmsiTimeSyncPlugin
             cmbAutoSyncMode.SelectedIndex = AppConfig.autoSyncModeIndex;
 
             // Same with checkboxes
-            chkAlwaysOnTop.Checked = AppConfig.alwaysOnTop;
             chkAutoSyncOmsiTime.Checked = AppConfig.autoSyncOmsiTime;
             chkOnlyResyncOmsiTimeIfBehindActualTime.Checked = AppConfig.onlyResyncOmsiTimeIfBehindActualTime;
             chkAutoDetectOffsetTime.Checked = AppConfig.autoDetectOffsetHours;
+
+            if (AppConfig.alwaysOnTop != AppConfigDefaults.alwaysOnTop)
+            {
+                refreshButtonAlwaysOnTop();
+            }
 
             // Add 'key released' event for manual sync hotkey
             //gkhManualSyncHotkey.KeyUp += new KeyEventHandler(manualSyncHotkey_KeyUp);
@@ -564,29 +691,168 @@ namespace OmsiTimeSyncPlugin
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("month", "0x00461788"));    // int (m)
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("day", "0x00461774"));      // int (d)
 
-            // Enable the timer which does various stuff
-            tmrOMSI.Enabled = true;
+            // Setup the autosave timer
+            tmrAutoSave = new System.Threading.Timer(new System.Threading.TimerCallback(tmrAutoSave_Tick), null, 60000, 60000);
+
+            // Setup the background timer which does various stuff
+            tmrBackground = new System.Threading.Timer(new System.Threading.TimerCallback(tmrBackground_Tick), null, 1000, 1000);
         }
 
         // Form closing event
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             // If the timer is enabled
-            if (tmrOMSI.Enabled)
+            if (tmrBackground != null)
             {
                 // Save app config
                 saveConfig();
+
+                e.Cancel = true;
             }
         }
 
         private void frmMain_LocationChanged(object sender, EventArgs e)
         {
             // If the timer is enabled
-            if (tmrOMSI.Enabled)
+            if (tmrBackground != null)
             {
                 // Set current window position in app's config
                 AppConfig.windowPositionTop = Top;
                 AppConfig.windowPositionLeft = Left;
+            }
+        }
+
+        private void formTitleBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isFormBeingDragged)
+            {
+                Point pointMoveTo;
+                pointMoveTo = this.PointToScreen(new Point(e.X, e.Y));
+                pointMoveTo.Offset(-picPointClicked.X, -picPointClicked.Y);
+                Location = pointMoveTo;
+            }
+        }
+
+        private void formTitleBar_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isFormBeingDragged = true;
+                picPointClicked = new Point(e.X, e.Y);
+            }
+            else
+            {
+                isFormBeingDragged = false;
+            }
+        }
+
+        private void formTitleBar_MouseUp(object sender, MouseEventArgs e)
+        {
+            isFormBeingDragged = false;
+            
+            // If the timer is enabled
+            if (tmrBackground != null)
+            {
+                // Set current window position in app's config
+                AppConfig.windowPositionTop = Top;
+                AppConfig.windowPositionLeft = Left;
+            }
+        }
+
+        private void frmMain_Shown(object sender, EventArgs e)
+        {
+            Focus();
+            BringToFront();
+        }
+
+        private void formTitleBarMinimise_MouseEnter(object sender, EventArgs e)
+        {
+            formTitleBarMinimise.ForeColor = Color.LightGray;
+        }
+
+        private void formTitleBarMinimise_MouseLeave(object sender, EventArgs e)
+        {
+            formTitleBarMinimise.ForeColor = Color.White;
+        }
+
+        private void formTitleBarExpandCompact_MouseEnter(object sender, EventArgs e)
+        {
+            formTitleBarExpandCompact.ForeColor = Color.LightGray;
+        }
+
+        private void formTitleBarExpandCompact_MouseLeave(object sender, EventArgs e)
+        {
+            formTitleBarExpandCompact.ForeColor = Color.White;
+        }
+
+        private void formTitleBarPinUnpin_MouseEnter(object sender, EventArgs e)
+        {
+            formTitleBarPinUnpin.ForeColor = Color.LightGray;
+        }
+
+        private void formTitleBarPinUnpin_MouseLeave(object sender, EventArgs e)
+        {
+            formTitleBarPinUnpin.ForeColor = Color.White;
+        }
+
+        private void formTitleBarMinimise_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                WindowState = FormWindowState.Minimized;
+            }
+        }
+
+        private void formTitleBarExpandCompact_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                if (formTitleBarExpandCompact.Text == "5")
+                {
+                    Height = 35;
+                    formTitleBarExpandCompact.Text = "6";
+                }
+                else
+                {
+                    Height = 250;
+                    formTitleBarExpandCompact.Text = "5";
+                }
+            }
+        }
+
+        private void formTitleBarPinUnpin_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                AppConfig.alwaysOnTop = !AppConfig.alwaysOnTop;
+
+                refreshButtonAlwaysOnTop();
+            }
+        }
+
+        private void refreshButtonAlwaysOnTop()
+        {
+            TopMost = AppConfig.alwaysOnTop;
+
+            if (AppConfig.alwaysOnTop)
+            {
+                formTitleBarPinUnpin.BackColor = Color.DarkGreen;
+            }
+            else
+            {
+                formTitleBarPinUnpin.BackColor = Color.DarkRed;
+            }
+        }
+
+        private void formTitleBarCurrentOmsiSpeed_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
+            {
+                formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph).ToString().PadRight(3) + "KMH";
+            }
+            else if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("KMH"))
+            {
+                formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph * 0.6213711922).ToString().PadRight(3) + "MPH";
             }
         }
     }
