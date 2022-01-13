@@ -60,6 +60,9 @@
             this.formTitleBarIconCurrentOmsiDelay = new System.Windows.Forms.Label();
             this.formTitleBarCurrentOmsiDelay = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.formTitleBarNextBusStop = new System.Windows.Forms.Label();
+            this.formTitleBarBusStopRequest = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formBorder)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formTitleBar)).BeginInit();
@@ -71,7 +74,7 @@
             this.lblOmsiTime.AutoSize = true;
             this.lblOmsiTime.BackColor = System.Drawing.Color.White;
             this.lblOmsiTime.ForeColor = System.Drawing.Color.Black;
-            this.lblOmsiTime.Location = new System.Drawing.Point(126, 45);
+            this.lblOmsiTime.Location = new System.Drawing.Point(126, 68);
             this.lblOmsiTime.Name = "lblOmsiTime";
             this.lblOmsiTime.Size = new System.Drawing.Size(8, 17);
             this.lblOmsiTime.TabIndex = 0;
@@ -83,7 +86,7 @@
             this.lblSystemTime.AutoSize = true;
             this.lblSystemTime.BackColor = System.Drawing.Color.White;
             this.lblSystemTime.ForeColor = System.Drawing.Color.Black;
-            this.lblSystemTime.Location = new System.Drawing.Point(126, 62);
+            this.lblSystemTime.Location = new System.Drawing.Point(126, 85);
             this.lblSystemTime.Name = "lblSystemTime";
             this.lblSystemTime.Size = new System.Drawing.Size(8, 17);
             this.lblSystemTime.TabIndex = 1;
@@ -96,7 +99,7 @@
             this.lblHeaderOmsiTime.BackColor = System.Drawing.Color.White;
             this.lblHeaderOmsiTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblHeaderOmsiTime.ForeColor = System.Drawing.Color.Black;
-            this.lblHeaderOmsiTime.Location = new System.Drawing.Point(12, 45);
+            this.lblHeaderOmsiTime.Location = new System.Drawing.Point(12, 68);
             this.lblHeaderOmsiTime.Name = "lblHeaderOmsiTime";
             this.lblHeaderOmsiTime.Size = new System.Drawing.Size(67, 17);
             this.lblHeaderOmsiTime.TabIndex = 2;
@@ -109,7 +112,7 @@
             this.lblHeaderSystemTime.BackColor = System.Drawing.Color.White;
             this.lblHeaderSystemTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblHeaderSystemTime.ForeColor = System.Drawing.Color.Black;
-            this.lblHeaderSystemTime.Location = new System.Drawing.Point(12, 62);
+            this.lblHeaderSystemTime.Location = new System.Drawing.Point(12, 85);
             this.lblHeaderSystemTime.Name = "lblHeaderSystemTime";
             this.lblHeaderSystemTime.Size = new System.Drawing.Size(70, 17);
             this.lblHeaderSystemTime.TabIndex = 3;
@@ -119,7 +122,7 @@
             // btnManualSyncOmsiTime
             // 
             this.btnManualSyncOmsiTime.Enabled = false;
-            this.btnManualSyncOmsiTime.Location = new System.Drawing.Point(416, 164);
+            this.btnManualSyncOmsiTime.Location = new System.Drawing.Point(416, 187);
             this.btnManualSyncOmsiTime.Name = "btnManualSyncOmsiTime";
             this.btnManualSyncOmsiTime.Size = new System.Drawing.Size(98, 23);
             this.btnManualSyncOmsiTime.TabIndex = 5;
@@ -135,7 +138,7 @@
             this.chkAutoSyncOmsiTime.Checked = true;
             this.chkAutoSyncOmsiTime.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkAutoSyncOmsiTime.ForeColor = System.Drawing.Color.Black;
-            this.chkAutoSyncOmsiTime.Location = new System.Drawing.Point(12, 117);
+            this.chkAutoSyncOmsiTime.Location = new System.Drawing.Point(12, 140);
             this.chkAutoSyncOmsiTime.Name = "chkAutoSyncOmsiTime";
             this.chkAutoSyncOmsiTime.Size = new System.Drawing.Size(275, 18);
             this.chkAutoSyncOmsiTime.TabIndex = 6;
@@ -152,7 +155,7 @@
             this.chkOnlyResyncOmsiTimeIfBehindActualTime.Checked = true;
             this.chkOnlyResyncOmsiTimeIfBehindActualTime.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkOnlyResyncOmsiTimeIfBehindActualTime.ForeColor = System.Drawing.Color.Black;
-            this.chkOnlyResyncOmsiTimeIfBehindActualTime.Location = new System.Drawing.Point(12, 82);
+            this.chkOnlyResyncOmsiTimeIfBehindActualTime.Location = new System.Drawing.Point(12, 105);
             this.chkOnlyResyncOmsiTimeIfBehindActualTime.Name = "chkOnlyResyncOmsiTimeIfBehindActualTime";
             this.chkOnlyResyncOmsiTimeIfBehindActualTime.Size = new System.Drawing.Size(298, 18);
             this.chkOnlyResyncOmsiTimeIfBehindActualTime.TabIndex = 7;
@@ -168,7 +171,7 @@
             this.lblHeaderOmsiOffsetHours.BackColor = System.Drawing.Color.White;
             this.lblHeaderOmsiOffsetHours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblHeaderOmsiOffsetHours.ForeColor = System.Drawing.Color.Black;
-            this.lblHeaderOmsiOffsetHours.Location = new System.Drawing.Point(12, 174);
+            this.lblHeaderOmsiOffsetHours.Location = new System.Drawing.Point(12, 197);
             this.lblHeaderOmsiOffsetHours.Name = "lblHeaderOmsiOffsetHours";
             this.lblHeaderOmsiOffsetHours.Size = new System.Drawing.Size(153, 17);
             this.lblHeaderOmsiOffsetHours.TabIndex = 8;
@@ -228,7 +231,7 @@
             "21",
             "22",
             "23"});
-            this.cmbOffsetHours.Location = new System.Drawing.Point(185, 171);
+            this.cmbOffsetHours.Location = new System.Drawing.Point(185, 194);
             this.cmbOffsetHours.Name = "cmbOffsetHours";
             this.cmbOffsetHours.Size = new System.Drawing.Size(151, 21);
             this.cmbOffsetHours.TabIndex = 9;
@@ -240,7 +243,7 @@
             this.label2.BackColor = System.Drawing.Color.White;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(32, 99);
+            this.label2.Location = new System.Drawing.Point(32, 122);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(232, 15);
             this.label2.TabIndex = 13;
@@ -252,7 +255,7 @@
             this.lblVersionAuthorInfo.AutoEllipsis = true;
             this.lblVersionAuthorInfo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.lblVersionAuthorInfo.ForeColor = System.Drawing.Color.Black;
-            this.lblVersionAuthorInfo.Location = new System.Drawing.Point(415, 71);
+            this.lblVersionAuthorInfo.Location = new System.Drawing.Point(415, 94);
             this.lblVersionAuthorInfo.Name = "lblVersionAuthorInfo";
             this.lblVersionAuthorInfo.Size = new System.Drawing.Size(100, 39);
             this.lblVersionAuthorInfo.TabIndex = 14;
@@ -266,7 +269,7 @@
             this.lnkDonate.AutoSize = true;
             this.lnkDonate.BackColor = System.Drawing.Color.White;
             this.lnkDonate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lnkDonate.Location = new System.Drawing.Point(321, 228);
+            this.lnkDonate.Location = new System.Drawing.Point(321, 243);
             this.lnkDonate.Name = "lnkDonate";
             this.lnkDonate.Size = new System.Drawing.Size(217, 17);
             this.lnkDonate.TabIndex = 15;
@@ -281,7 +284,7 @@
             this.lnkGithub.AutoSize = true;
             this.lnkGithub.BackColor = System.Drawing.Color.White;
             this.lnkGithub.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lnkGithub.Location = new System.Drawing.Point(12, 228);
+            this.lnkGithub.Location = new System.Drawing.Point(12, 243);
             this.lnkGithub.Name = "lnkGithub";
             this.lnkGithub.Size = new System.Drawing.Size(44, 13);
             this.lnkGithub.TabIndex = 16;
@@ -302,7 +305,7 @@
             "When bus has a timetable",
             "When bus has no timetable",
             "When game is paused"});
-            this.cmbAutoSyncMode.Location = new System.Drawing.Point(126, 144);
+            this.cmbAutoSyncMode.Location = new System.Drawing.Point(126, 167);
             this.cmbAutoSyncMode.Name = "cmbAutoSyncMode";
             this.cmbAutoSyncMode.Size = new System.Drawing.Size(210, 21);
             this.cmbAutoSyncMode.TabIndex = 17;
@@ -314,7 +317,7 @@
             this.label4.BackColor = System.Drawing.Color.White;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.Black;
-            this.label4.Location = new System.Drawing.Point(12, 147);
+            this.label4.Location = new System.Drawing.Point(12, 170);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(93, 17);
             this.label4.TabIndex = 18;
@@ -326,7 +329,7 @@
             this.picLogo.BackColor = System.Drawing.Color.White;
             this.picLogo.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("picLogo.BackgroundImage")));
             this.picLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.picLogo.Location = new System.Drawing.Point(394, 48);
+            this.picLogo.Location = new System.Drawing.Point(394, 71);
             this.picLogo.Name = "picLogo";
             this.picLogo.Size = new System.Drawing.Size(143, 138);
             this.picLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -338,7 +341,7 @@
             this.chkAutoDetectOffsetTime.AutoSize = true;
             this.chkAutoDetectOffsetTime.BackColor = System.Drawing.Color.White;
             this.chkAutoDetectOffsetTime.ForeColor = System.Drawing.Color.Black;
-            this.chkAutoDetectOffsetTime.Location = new System.Drawing.Point(342, 174);
+            this.chkAutoDetectOffsetTime.Location = new System.Drawing.Point(342, 197);
             this.chkAutoDetectOffsetTime.Name = "chkAutoDetectOffsetTime";
             this.chkAutoDetectOffsetTime.Size = new System.Drawing.Size(46, 18);
             this.chkAutoDetectOffsetTime.TabIndex = 22;
@@ -355,7 +358,7 @@
             this.formBorder.Dock = System.Windows.Forms.DockStyle.Fill;
             this.formBorder.Location = new System.Drawing.Point(0, 0);
             this.formBorder.Name = "formBorder";
-            this.formBorder.Size = new System.Drawing.Size(550, 250);
+            this.formBorder.Size = new System.Drawing.Size(550, 265);
             this.formBorder.TabIndex = 23;
             this.formBorder.TabStop = false;
             // 
@@ -365,7 +368,7 @@
             this.formTitleBar.Dock = System.Windows.Forms.DockStyle.Top;
             this.formTitleBar.Location = new System.Drawing.Point(0, 0);
             this.formTitleBar.Name = "formTitleBar";
-            this.formTitleBar.Size = new System.Drawing.Size(550, 35);
+            this.formTitleBar.Size = new System.Drawing.Size(550, 57);
             this.formTitleBar.TabIndex = 24;
             this.formTitleBar.TabStop = false;
             this.formTitleBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseDown);
@@ -378,7 +381,7 @@
             this.formTitle.BackColor = System.Drawing.Color.Black;
             this.formTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.formTitle.ForeColor = System.Drawing.Color.White;
-            this.formTitle.Location = new System.Drawing.Point(40, 11);
+            this.formTitle.Location = new System.Drawing.Point(42, 8);
             this.formTitle.Name = "formTitle";
             this.formTitle.Size = new System.Drawing.Size(92, 17);
             this.formTitle.TabIndex = 25;
@@ -394,7 +397,7 @@
             this.formTitleBarMinimise.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.formTitleBarMinimise.Font = new System.Drawing.Font("Marlett", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.formTitleBarMinimise.ForeColor = System.Drawing.Color.White;
-            this.formTitleBarMinimise.Location = new System.Drawing.Point(526, 8);
+            this.formTitleBarMinimise.Location = new System.Drawing.Point(525, 19);
             this.formTitleBarMinimise.Name = "formTitleBarMinimise";
             this.formTitleBarMinimise.Size = new System.Drawing.Size(17, 20);
             this.formTitleBarMinimise.TabIndex = 26;
@@ -411,7 +414,7 @@
             this.formTitleBarExpandCompact.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.formTitleBarExpandCompact.Font = new System.Drawing.Font("Webdings", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.formTitleBarExpandCompact.ForeColor = System.Drawing.Color.White;
-            this.formTitleBarExpandCompact.Location = new System.Drawing.Point(503, 8);
+            this.formTitleBarExpandCompact.Location = new System.Drawing.Point(502, 19);
             this.formTitleBarExpandCompact.Name = "formTitleBarExpandCompact";
             this.formTitleBarExpandCompact.Size = new System.Drawing.Size(17, 20);
             this.formTitleBarExpandCompact.TabIndex = 27;
@@ -427,7 +430,7 @@
             this.formTitleBarIcon.BackColor = System.Drawing.Color.Black;
             this.formTitleBarIcon.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("formTitleBarIcon.BackgroundImage")));
             this.formTitleBarIcon.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.formTitleBarIcon.Location = new System.Drawing.Point(4, 3);
+            this.formTitleBarIcon.Location = new System.Drawing.Point(6, 0);
             this.formTitleBarIcon.Name = "formTitleBarIcon";
             this.formTitleBarIcon.Size = new System.Drawing.Size(32, 32);
             this.formTitleBarIcon.TabIndex = 28;
@@ -442,7 +445,7 @@
             this.formTitleBarPinUnpin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.formTitleBarPinUnpin.Font = new System.Drawing.Font("Webdings", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.formTitleBarPinUnpin.ForeColor = System.Drawing.Color.White;
-            this.formTitleBarPinUnpin.Location = new System.Drawing.Point(480, 8);
+            this.formTitleBarPinUnpin.Location = new System.Drawing.Point(479, 19);
             this.formTitleBarPinUnpin.Name = "formTitleBarPinUnpin";
             this.formTitleBarPinUnpin.Size = new System.Drawing.Size(17, 20);
             this.formTitleBarPinUnpin.TabIndex = 29;
@@ -458,7 +461,7 @@
             this.formTitleBarCurrentOmsiSpeed.BackColor = System.Drawing.Color.Black;
             this.formTitleBarCurrentOmsiSpeed.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.formTitleBarCurrentOmsiSpeed.ForeColor = System.Drawing.Color.White;
-            this.formTitleBarCurrentOmsiSpeed.Location = new System.Drawing.Point(185, 10);
+            this.formTitleBarCurrentOmsiSpeed.Location = new System.Drawing.Point(185, 8);
             this.formTitleBarCurrentOmsiSpeed.Name = "formTitleBarCurrentOmsiSpeed";
             this.formTitleBarCurrentOmsiSpeed.Size = new System.Drawing.Size(67, 17);
             this.formTitleBarCurrentOmsiSpeed.TabIndex = 30;
@@ -475,7 +478,7 @@
             this.formTitleBarCurrentOmsiTime.BackColor = System.Drawing.Color.Black;
             this.formTitleBarCurrentOmsiTime.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.formTitleBarCurrentOmsiTime.ForeColor = System.Drawing.Color.White;
-            this.formTitleBarCurrentOmsiTime.Location = new System.Drawing.Point(290, 10);
+            this.formTitleBarCurrentOmsiTime.Location = new System.Drawing.Point(290, 8);
             this.formTitleBarCurrentOmsiTime.Name = "formTitleBarCurrentOmsiTime";
             this.formTitleBarCurrentOmsiTime.Size = new System.Drawing.Size(75, 17);
             this.formTitleBarCurrentOmsiTime.TabIndex = 31;
@@ -491,7 +494,7 @@
             this.formTitleBarIconCurrentOmsiSpeed.BackColor = System.Drawing.Color.Black;
             this.formTitleBarIconCurrentOmsiSpeed.Font = new System.Drawing.Font("Webdings", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.formTitleBarIconCurrentOmsiSpeed.ForeColor = System.Drawing.Color.Orange;
-            this.formTitleBarIconCurrentOmsiSpeed.Location = new System.Drawing.Point(161, 10);
+            this.formTitleBarIconCurrentOmsiSpeed.Location = new System.Drawing.Point(161, 8);
             this.formTitleBarIconCurrentOmsiSpeed.Name = "formTitleBarIconCurrentOmsiSpeed";
             this.formTitleBarIconCurrentOmsiSpeed.Size = new System.Drawing.Size(18, 18);
             this.formTitleBarIconCurrentOmsiSpeed.TabIndex = 32;
@@ -507,11 +510,11 @@
             this.formTitleBarIconCurrentTime.BackColor = System.Drawing.Color.Black;
             this.formTitleBarIconCurrentTime.Font = new System.Drawing.Font("Wingdings", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.formTitleBarIconCurrentTime.ForeColor = System.Drawing.Color.Orange;
-            this.formTitleBarIconCurrentTime.Location = new System.Drawing.Point(266, 11);
+            this.formTitleBarIconCurrentTime.Location = new System.Drawing.Point(266, 9);
             this.formTitleBarIconCurrentTime.Name = "formTitleBarIconCurrentTime";
             this.formTitleBarIconCurrentTime.Size = new System.Drawing.Size(18, 18);
             this.formTitleBarIconCurrentTime.TabIndex = 33;
-            this.formTitleBarIconCurrentTime.Text = "R";
+            this.formTitleBarIconCurrentTime.Text = "º";
             this.formTitleBarIconCurrentTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.formTitleBarIconCurrentTime.UseCompatibleTextRendering = true;
             this.formTitleBarIconCurrentTime.MouseDown += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseDown);
@@ -523,7 +526,7 @@
             this.formTitleBarIconCurrentOmsiDelay.BackColor = System.Drawing.Color.Black;
             this.formTitleBarIconCurrentOmsiDelay.Font = new System.Drawing.Font("Wingdings", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.formTitleBarIconCurrentOmsiDelay.ForeColor = System.Drawing.Color.Orange;
-            this.formTitleBarIconCurrentOmsiDelay.Location = new System.Drawing.Point(379, 11);
+            this.formTitleBarIconCurrentOmsiDelay.Location = new System.Drawing.Point(379, 9);
             this.formTitleBarIconCurrentOmsiDelay.Name = "formTitleBarIconCurrentOmsiDelay";
             this.formTitleBarIconCurrentOmsiDelay.Size = new System.Drawing.Size(18, 18);
             this.formTitleBarIconCurrentOmsiDelay.TabIndex = 35;
@@ -539,7 +542,7 @@
             this.formTitleBarCurrentOmsiDelay.BackColor = System.Drawing.Color.Black;
             this.formTitleBarCurrentOmsiDelay.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.formTitleBarCurrentOmsiDelay.ForeColor = System.Drawing.Color.White;
-            this.formTitleBarCurrentOmsiDelay.Location = new System.Drawing.Point(400, 10);
+            this.formTitleBarCurrentOmsiDelay.Location = new System.Drawing.Point(400, 8);
             this.formTitleBarCurrentOmsiDelay.Name = "formTitleBarCurrentOmsiDelay";
             this.formTitleBarCurrentOmsiDelay.Size = new System.Drawing.Size(64, 17);
             this.formTitleBarCurrentOmsiDelay.TabIndex = 36;
@@ -553,7 +556,7 @@
             this.label1.BackColor = System.Drawing.Color.White;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(437, 211);
+            this.label1.Location = new System.Drawing.Point(437, 226);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(101, 17);
             this.label1.TabIndex = 37;
@@ -561,11 +564,55 @@
             this.label1.TextAlign = System.Drawing.ContentAlignment.BottomRight;
             this.label1.UseCompatibleTextRendering = true;
             // 
+            // label6
+            // 
+            this.label6.BackColor = System.Drawing.Color.Black;
+            this.label6.Font = new System.Drawing.Font("Wingdings", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
+            this.label6.ForeColor = System.Drawing.Color.Orange;
+            this.label6.Location = new System.Drawing.Point(7, 32);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(18, 18);
+            this.label6.TabIndex = 40;
+            this.label6.Text = "é";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label6.UseCompatibleTextRendering = true;
+            // 
+            // formTitleBarNextBusStop
+            // 
+            this.formTitleBarNextBusStop.BackColor = System.Drawing.Color.Black;
+            this.formTitleBarNextBusStop.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.formTitleBarNextBusStop.ForeColor = System.Drawing.Color.White;
+            this.formTitleBarNextBusStop.Location = new System.Drawing.Point(32, 34);
+            this.formTitleBarNextBusStop.Name = "formTitleBarNextBusStop";
+            this.formTitleBarNextBusStop.Size = new System.Drawing.Size(333, 17);
+            this.formTitleBarNextBusStop.TabIndex = 41;
+            this.formTitleBarNextBusStop.Text = "-";
+            this.formTitleBarNextBusStop.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.formTitleBarNextBusStop.UseCompatibleTextRendering = true;
+            // 
+            // formTitleBarBusStopRequest
+            // 
+            this.formTitleBarBusStopRequest.BackColor = System.Drawing.Color.Black;
+            this.formTitleBarBusStopRequest.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.formTitleBarBusStopRequest.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.formTitleBarBusStopRequest.Location = new System.Drawing.Point(400, 34);
+            this.formTitleBarBusStopRequest.Name = "formTitleBarBusStopRequest";
+            this.formTitleBarBusStopRequest.Size = new System.Drawing.Size(64, 17);
+            this.formTitleBarBusStopRequest.TabIndex = 43;
+            this.formTitleBarBusStopRequest.Text = "- STOP -";
+            this.formTitleBarBusStopRequest.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.formTitleBarBusStopRequest.UseCompatibleTextRendering = true;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(550, 250);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(550, 265);
+            this.Controls.Add(this.formTitleBarBusStopRequest);
+            this.Controls.Add(this.formTitleBarNextBusStop);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.formTitleBarIcon);
             this.Controls.Add(this.lnkDonate);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.formTitleBarCurrentOmsiDelay);
@@ -575,7 +622,6 @@
             this.Controls.Add(this.formTitleBarCurrentOmsiTime);
             this.Controls.Add(this.formTitleBarCurrentOmsiSpeed);
             this.Controls.Add(this.formTitleBarPinUnpin);
-            this.Controls.Add(this.formTitleBarIcon);
             this.Controls.Add(this.formTitleBarExpandCompact);
             this.Controls.Add(this.formTitleBarMinimise);
             this.Controls.Add(this.formTitle);
@@ -597,6 +643,7 @@
             this.Controls.Add(this.lblSystemTime);
             this.Controls.Add(this.lblOmsiTime);
             this.Controls.Add(this.formBorder);
+            this.ForeColor = System.Drawing.Color.Black;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -648,6 +695,9 @@
         private System.Windows.Forms.Label formTitleBarIconCurrentOmsiDelay;
         private System.Windows.Forms.Label formTitleBarCurrentOmsiDelay;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label formTitleBarNextBusStop;
+        private System.Windows.Forms.Label formTitleBarBusStopRequest;
     }
 }
 

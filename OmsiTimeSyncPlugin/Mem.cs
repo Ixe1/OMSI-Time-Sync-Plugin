@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -75,7 +76,7 @@ namespace OmsiTimeSyncPlugin
             return -1;
         }
 
-        public byte[] ReadBytes(string memoryAddress, int length)
+        public byte[] ReadBytes(string memoryAddress, int length, bool untilNullByte = false)
         {
             if (processHandle != IntPtr.Zero)
             {
@@ -85,6 +86,49 @@ namespace OmsiTimeSyncPlugin
                     byte[] buffer = new byte[length];
 
                     ReadProcessMemory((Int32)processHandle, Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + Convert.ToInt32(memoryAddress, 16), buffer, buffer.Length, ref bytesRead);
+
+                    if (untilNullByte)
+                    {
+                        for (int i = 0; i < bytesRead; i++)
+                        {
+                            if (buffer[i] == 0x0 && i > 0)
+                            {
+                                return buffer.Skip(0).Take(i).ToArray();
+                            }
+                        }
+                    }
+
+                    return buffer;
+                }
+                catch { }
+
+                return null;
+            }
+
+            return null;
+        }
+
+        public byte[] ReadBytes(int memoryAddress, int length, bool baseAddress = true, bool untilNullByte = false)
+        {
+            if (processHandle != IntPtr.Zero)
+            {
+                try
+                {
+                    int bytesRead = 0;
+                    byte[] buffer = new byte[length];
+
+                    ReadProcessMemory((Int32)processHandle, baseAddress ? (Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + memoryAddress) : memoryAddress, buffer, buffer.Length, ref bytesRead);
+
+                    if (untilNullByte)
+                    {
+                        for (int i = 0; i < bytesRead; i++)
+                        {
+                            if (buffer[i] == 0x0 && i > 0)
+                            {
+                                return buffer.Skip(0).Take(i).ToArray();
+                            }
+                        }
+                    }
 
                     return buffer;
                 }

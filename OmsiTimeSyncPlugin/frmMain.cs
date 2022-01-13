@@ -41,6 +41,9 @@ namespace OmsiTimeSyncPlugin
         // The version of OMSI currently running (or unknown)
         public string omsiVersion = "Unknown";
 
+        // The map that OMSI is currently running (or unknown)
+        public string omsiMap = "Unknown";
+
         // Is OMSI running and this tool has been successfully attached to it?
         public bool processAttached = false;
 
@@ -393,7 +396,7 @@ namespace OmsiTimeSyncPlugin
 
                 try
                 {
-                    // Open logfile.txt but allow other applications to still read/write to the logfile.txct file
+                    // Open logfile.txt but allow other applications to still read/write to the logfile.txt file
                     using (var fs = new FileStream("logfile.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x1000, FileOptions.SequentialScan))
                     using (var sr = new StreamReader(fs, Encoding.UTF8))
                     {
@@ -403,7 +406,7 @@ namespace OmsiTimeSyncPlugin
                         while ((line = sr.ReadLine()) != null)
                         {
                             // This indicates OMSI has loaded a map
-                            if (line.Contains("Information: Map loaded"))
+                            if (line.Contains("Information: Traffic loaded"))
                             {
                                 omsiLoaded = true;
                             }
@@ -413,9 +416,17 @@ namespace OmsiTimeSyncPlugin
                                 omsiLoaded = false;
                             }
                         }
+
+                        sr.Close();
+                        fs.Close();
                     }
                 }
                 catch { return; }
+
+                if (omsiLoaded)
+                {
+                    omsiLoaded = getOmsiTime();
+                }
 
                 // If OMSI isn't loaded into a map
                 if (!omsiLoaded)
@@ -425,20 +436,46 @@ namespace OmsiTimeSyncPlugin
                     // Indicate that OMSI is running but isn't loaded into a map yet
                     lblOmsiTime.Text = "OMSI is running, waiting for a map to load!";
 
+                    omsiMap = "Unknown";
+
                     // Don't execute any further code yet
                     return;
                 }
+                else
+                {
+                    // Try and identify the map that OMSI has loaded
+                    try
+                    {
+                        int firstValue = m.ReadInt(0x00461588, true);
+                        int secondValue = m.ReadInt(firstValue + 0x154, false);
+                        byte[] thirdValue = m.ReadBytes(secondValue + 0x0, 64, false, true);
+
+                        omsiMap = Encoding.UTF8.GetString(thirdValue).Replace('\\', '/').ToLower().Replace("global.cfg", "");
+
+                        if (Directory.Exists(omsiMap))
+                        {
+                            // Attempt to get all of the bus stop names for the current map
+                            BusStopsCfgReader.readBusStopsCfg(omsiMap + "TTData/BusStops.cfg");
+                            TTPReader.readTTPFiles(omsiMap + "TTData/");
+                        }
+                        else
+                        {
+                            omsiMap = "Unknown";
+                        }
+                    }
+                    catch { omsiMap = "Unknown"; }
+                }
 
                 // If auto sync OMSI time is enabled
-                if (AppConfig.autoSyncOmsiTime)
+                if (AppConfig.autoSyncOmsiTime && systemTime != DateTime.MinValue)
                 {
                     // Go ahead with syncing OMSI time
                     syncOmsiTime();
                 }
-                else
-                {
-                    getOmsiTime();
-                }
+                //else
+                //{
+                //    getOmsiTime();
+                //}
 
                 if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
                 {
@@ -454,6 +491,8 @@ namespace OmsiTimeSyncPlugin
                 string omsiDelayStr = "-";
                 int omsiDelay = 0;
 
+                string omsiNextBusStop = "-";
+
                 if (OmsiTelemetry.scheduleActive == 1.0f)
                 {
                     try
@@ -468,11 +507,35 @@ namespace OmsiTimeSyncPlugin
                         omsiDelayStr = string.Format("{0:D2}:{1:D2}", (int)Math.Abs(omsiDelayTime.TotalMinutes), Math.Abs(omsiDelayTime.Seconds));
                     }
                     catch { omsiDelayStr = "-"; omsiDelay = 0; }
-                }
-                else
-                {
-                    omsiDelayStr = "-";
-                    omsiDelay = 0;
+
+                    try
+                    {
+                        int firstValue = m.ReadInt(0x00461500, true);
+                        int secondValue = m.ReadInt(firstValue + 0x6B0, false);
+
+                        string busStopName;
+
+                        busStopName = BusStopsCfgReader.findBusStop(secondValue);
+
+                        if (busStopName != null)
+                        {
+                            omsiNextBusStop = busStopName;
+                        }
+                        else
+                        {
+                            busStopName = TTPReader.findBusStop(secondValue);
+
+                            if (busStopName != null)
+                            {
+                                omsiNextBusStop = busStopName;
+                            }
+                            else
+                            {
+                                omsiNextBusStop = "-";
+                            }
+                        }
+                    }
+                    catch { omsiNextBusStop = "-"; }
                 }
 
                 if (omsiDelay < 0) formTitleBarCurrentOmsiDelay.ForeColor = Color.FromArgb(192, 255, 192);
@@ -483,47 +546,26 @@ namespace OmsiTimeSyncPlugin
                 else if (omsiDelay >= 0 && omsiDelayStr != "-") formTitleBarCurrentOmsiDelay.Text = "+" + omsiDelayStr;
                 else formTitleBarCurrentOmsiDelay.Text = "-";
 
+                formTitleBarNextBusStop.Text = omsiNextBusStop;
+
+                if (OmsiTelemetry.busStoppingLight != 0.0f)
+                {
+                    if (formTitleBarBusStopRequest.ForeColor == Color.FromArgb(64, 64, 64))
+                    {
+                        formTitleBarBusStopRequest.ForeColor = Color.White;
+                    }
+                    else
+                    {
+                        formTitleBarBusStopRequest.ForeColor = Color.FromArgb(64, 64, 64);
+                    }
+                }
+                else
+                {
+                    formTitleBarBusStopRequest.ForeColor = Color.FromArgb(64, 64, 64);
+                }
+
                 // State the current date and time of OMSI in the UI
                 lblOmsiTime.Text = omsiTime.ToString();
-
-                //try
-                //{
-                //    TextWriter txtWtr = new StreamWriter("omsitimesync.log");
-                //
-                //    int x = 0;
-                //
-                //    txtWtr.WriteLine("VARS:");
-                //
-                //    foreach (float line in Main.vars)
-                //    {
-                //        txtWtr.WriteLine(x.ToString().PadRight(5) + line.ToString()); x++;
-                //    }
-                //
-                //    x = 0;
-                //
-                //    txtWtr.WriteLine("");
-                //    txtWtr.WriteLine("SYS VARS:");
-                //
-                //    foreach (float line in Main.sysVars)
-                //    {
-                //        txtWtr.WriteLine(x.ToString().PadRight(5) + line.ToString()); x++;
-                //    }
-                //
-                //    x = 0;
-                //
-                //    txtWtr.WriteLine("");
-                //    txtWtr.WriteLine("STRING VARS:");
-                //
-                //    foreach (string line in Main.stringVars)
-                //    {
-                //        txtWtr.WriteLine(x.ToString().PadRight(5) + line); x++;
-                //    }
-                //
-                //    x = 0;
-                //
-                //    txtWtr.Close();
-                //}
-                //catch { }
             }
             else
             {
@@ -547,6 +589,7 @@ namespace OmsiTimeSyncPlugin
             formTitleBarCurrentOmsiTime.Text = "-";
             formTitleBarCurrentOmsiDelay.Text = "-";
             formTitleBarCurrentOmsiDelay.ForeColor = Color.White;
+            formTitleBarNextBusStop.Text = "-";
         }
 
         // For handling the state of auto syncing OMSI time
@@ -682,6 +725,8 @@ namespace OmsiTimeSyncPlugin
             Omsi.addMemoryAddress("2.3.004", new OmsiAddress("month", "0x0046178C"));    // int (m)
             Omsi.addMemoryAddress("2.3.004", new OmsiAddress("day", "0x00461778"));      // int (d)
 
+            // 0x4 difference?
+
             // v2.2.032
             // Date/Time
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("hour", "0x00461768"));     // byte (h)
@@ -763,6 +808,7 @@ namespace OmsiTimeSyncPlugin
         {
             Focus();
             BringToFront();
+            TopLevel = true;
         }
 
         private void formTitleBarMinimise_MouseEnter(object sender, EventArgs e)
@@ -809,12 +855,12 @@ namespace OmsiTimeSyncPlugin
             {
                 if (formTitleBarExpandCompact.Text == "5")
                 {
-                    Height = 35;
+                    Height = 57;
                     formTitleBarExpandCompact.Text = "6";
                 }
                 else
                 {
-                    Height = 250;
+                    Height = 265;
                     formTitleBarExpandCompact.Text = "5";
                 }
             }
@@ -833,6 +879,7 @@ namespace OmsiTimeSyncPlugin
         private void refreshButtonAlwaysOnTop()
         {
             TopMost = AppConfig.alwaysOnTop;
+            TopLevel = true;
 
             if (AppConfig.alwaysOnTop)
             {
