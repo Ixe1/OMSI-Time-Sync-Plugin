@@ -21,7 +21,7 @@ namespace OmsiTimeSyncPlugin
             new System.Threading.Thread(
                     delegate ()
                     {
-                        System.Threading.Thread.Sleep(4000);
+                        System.Threading.Thread.Sleep(1000);
 
                         Application.Run(frmMain);
                     }
@@ -37,10 +37,11 @@ namespace OmsiTimeSyncPlugin
             OmsiTelemetry.omsiClosing = true;
         }
 
+        // Not currently used
         [DllExport(CallingConvention.StdCall)]
         public static void AccessTrigger(byte variableIndex, ref bool triggerScript)
         {
-            triggerScript = true;
+            
         }
 
         // OMSI variables
@@ -75,10 +76,11 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // Not currently used
         [DllExport(CallingConvention.StdCall)]
         public static unsafe void AccessStringVariable(byte variableIndex, char* firstCharacterAddress, ref bool writeValue)
         {
-            writeValue = false;
+            
         }
 
 

@@ -36,8 +36,6 @@
             this.btnManualSyncOmsiTime = new System.Windows.Forms.Button();
             this.chkAutoSyncOmsiTime = new System.Windows.Forms.CheckBox();
             this.chkOnlyResyncOmsiTimeIfBehindActualTime = new System.Windows.Forms.CheckBox();
-            this.lblHeaderOmsiOffsetHours = new System.Windows.Forms.Label();
-            this.cmbOffsetHours = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.lblVersionAuthorInfo = new System.Windows.Forms.Label();
             this.lnkDonate = new System.Windows.Forms.LinkLabel();
@@ -45,7 +43,6 @@
             this.cmbAutoSyncMode = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.picLogo = new System.Windows.Forms.PictureBox();
-            this.chkAutoDetectOffsetTime = new System.Windows.Forms.CheckBox();
             this.formBorder = new System.Windows.Forms.PictureBox();
             this.formTitleBar = new System.Windows.Forms.PictureBox();
             this.formTitle = new System.Windows.Forms.Label();
@@ -165,78 +162,6 @@
             this.chkOnlyResyncOmsiTimeIfBehindActualTime.UseVisualStyleBackColor = false;
             this.chkOnlyResyncOmsiTimeIfBehindActualTime.CheckedChanged += new System.EventHandler(this.chkOnlyResyncOmsiTimeIfBehindActualTime_CheckedChanged);
             // 
-            // lblHeaderOmsiOffsetHours
-            // 
-            this.lblHeaderOmsiOffsetHours.AutoSize = true;
-            this.lblHeaderOmsiOffsetHours.BackColor = System.Drawing.Color.White;
-            this.lblHeaderOmsiOffsetHours.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblHeaderOmsiOffsetHours.ForeColor = System.Drawing.Color.Black;
-            this.lblHeaderOmsiOffsetHours.Location = new System.Drawing.Point(12, 197);
-            this.lblHeaderOmsiOffsetHours.Name = "lblHeaderOmsiOffsetHours";
-            this.lblHeaderOmsiOffsetHours.Size = new System.Drawing.Size(153, 17);
-            this.lblHeaderOmsiOffsetHours.TabIndex = 8;
-            this.lblHeaderOmsiOffsetHours.Text = "Offset OMSI time by (hours):";
-            this.lblHeaderOmsiOffsetHours.UseCompatibleTextRendering = true;
-            // 
-            // cmbOffsetHours
-            // 
-            this.cmbOffsetHours.BackColor = System.Drawing.Color.White;
-            this.cmbOffsetHours.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbOffsetHours.FormattingEnabled = true;
-            this.cmbOffsetHours.Items.AddRange(new object[] {
-            "-23",
-            "-22",
-            "-21",
-            "-20",
-            "-19",
-            "-18",
-            "-17",
-            "-16",
-            "-15",
-            "-14",
-            "-13",
-            "-12",
-            "-11",
-            "-10",
-            "-9",
-            "-8",
-            "-7",
-            "-6",
-            "-5",
-            "-4",
-            "-3",
-            "-2",
-            "-1",
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23"});
-            this.cmbOffsetHours.Location = new System.Drawing.Point(185, 194);
-            this.cmbOffsetHours.Name = "cmbOffsetHours";
-            this.cmbOffsetHours.Size = new System.Drawing.Size(151, 21);
-            this.cmbOffsetHours.TabIndex = 9;
-            this.cmbOffsetHours.SelectedIndexChanged += new System.EventHandler(this.cmbOffsetHours_SelectedIndexChanged);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -336,21 +261,6 @@
             this.picLogo.TabIndex = 4;
             this.picLogo.TabStop = false;
             // 
-            // chkAutoDetectOffsetTime
-            // 
-            this.chkAutoDetectOffsetTime.AutoSize = true;
-            this.chkAutoDetectOffsetTime.BackColor = System.Drawing.Color.White;
-            this.chkAutoDetectOffsetTime.ForeColor = System.Drawing.Color.Black;
-            this.chkAutoDetectOffsetTime.Location = new System.Drawing.Point(342, 197);
-            this.chkAutoDetectOffsetTime.Name = "chkAutoDetectOffsetTime";
-            this.chkAutoDetectOffsetTime.Size = new System.Drawing.Size(46, 18);
-            this.chkAutoDetectOffsetTime.TabIndex = 22;
-            this.chkAutoDetectOffsetTime.Text = "Auto";
-            this.chkAutoDetectOffsetTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkAutoDetectOffsetTime.UseCompatibleTextRendering = true;
-            this.chkAutoDetectOffsetTime.UseVisualStyleBackColor = false;
-            this.chkAutoDetectOffsetTime.CheckedChanged += new System.EventHandler(this.chkAutoDetectOffsetTime_CheckedChanged);
-            // 
             // formBorder
             // 
             this.formBorder.BackColor = System.Drawing.Color.White;
@@ -441,7 +351,7 @@
             // 
             // formTitleBarPinUnpin
             // 
-            this.formTitleBarPinUnpin.BackColor = System.Drawing.Color.DarkRed;
+            this.formTitleBarPinUnpin.BackColor = System.Drawing.Color.DarkGreen;
             this.formTitleBarPinUnpin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.formTitleBarPinUnpin.Font = new System.Drawing.Font("Webdings", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.formTitleBarPinUnpin.ForeColor = System.Drawing.Color.White;
@@ -549,6 +459,9 @@
             this.formTitleBarCurrentOmsiDelay.Text = "-";
             this.formTitleBarCurrentOmsiDelay.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.formTitleBarCurrentOmsiDelay.UseCompatibleTextRendering = true;
+            this.formTitleBarCurrentOmsiDelay.MouseDown += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseDown);
+            this.formTitleBarCurrentOmsiDelay.MouseMove += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseMove);
+            this.formTitleBarCurrentOmsiDelay.MouseUp += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseUp);
             // 
             // label1
             // 
@@ -576,6 +489,9 @@
             this.label6.Text = "é";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label6.UseCompatibleTextRendering = true;
+            this.label6.MouseDown += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseDown);
+            this.label6.MouseMove += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseMove);
+            this.label6.MouseUp += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseUp);
             // 
             // formTitleBarNextBusStop
             // 
@@ -589,6 +505,9 @@
             this.formTitleBarNextBusStop.Text = "-";
             this.formTitleBarNextBusStop.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.formTitleBarNextBusStop.UseCompatibleTextRendering = true;
+            this.formTitleBarNextBusStop.MouseDown += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseDown);
+            this.formTitleBarNextBusStop.MouseMove += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseMove);
+            this.formTitleBarNextBusStop.MouseUp += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseUp);
             // 
             // formTitleBarBusStopRequest
             // 
@@ -602,6 +521,9 @@
             this.formTitleBarBusStopRequest.Text = "- STOP -";
             this.formTitleBarBusStopRequest.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.formTitleBarBusStopRequest.UseCompatibleTextRendering = true;
+            this.formTitleBarBusStopRequest.MouseDown += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseDown);
+            this.formTitleBarBusStopRequest.MouseMove += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseMove);
+            this.formTitleBarBusStopRequest.MouseUp += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseUp);
             // 
             // frmMain
             // 
@@ -626,14 +548,11 @@
             this.Controls.Add(this.formTitleBarMinimise);
             this.Controls.Add(this.formTitle);
             this.Controls.Add(this.formTitleBar);
-            this.Controls.Add(this.chkAutoDetectOffsetTime);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.cmbAutoSyncMode);
             this.Controls.Add(this.lnkGithub);
             this.Controls.Add(this.lblVersionAuthorInfo);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.cmbOffsetHours);
-            this.Controls.Add(this.lblHeaderOmsiOffsetHours);
             this.Controls.Add(this.chkOnlyResyncOmsiTimeIfBehindActualTime);
             this.Controls.Add(this.chkAutoSyncOmsiTime);
             this.Controls.Add(this.btnManualSyncOmsiTime);
@@ -650,6 +569,7 @@
             this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "OMSI Time Sync";
+            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.Shown += new System.EventHandler(this.frmMain_Shown);
@@ -672,15 +592,12 @@
         private System.Windows.Forms.Button btnManualSyncOmsiTime;
         private System.Windows.Forms.CheckBox chkAutoSyncOmsiTime;
         private System.Windows.Forms.CheckBox chkOnlyResyncOmsiTimeIfBehindActualTime;
-        private System.Windows.Forms.Label lblHeaderOmsiOffsetHours;
-        private System.Windows.Forms.ComboBox cmbOffsetHours;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblVersionAuthorInfo;
         private System.Windows.Forms.LinkLabel lnkDonate;
         private System.Windows.Forms.LinkLabel lnkGithub;
         private System.Windows.Forms.ComboBox cmbAutoSyncMode;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox chkAutoDetectOffsetTime;
         private System.Windows.Forms.PictureBox formBorder;
         private System.Windows.Forms.PictureBox formTitleBar;
         private System.Windows.Forms.Label formTitle;

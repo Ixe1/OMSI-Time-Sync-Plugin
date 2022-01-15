@@ -55,7 +55,7 @@ namespace OmsiTimeSyncPlugin
             return false;
         }
 
-        public int ReadByte(string memoryAddress)
+        public int ReadByte(int memoryAddress, bool baseAddress = true)
         {
             if (processHandle != IntPtr.Zero)
             {
@@ -64,7 +64,7 @@ namespace OmsiTimeSyncPlugin
                     int bytesRead = 0;
                     byte[] buffer = new byte[1];
 
-                    ReadProcessMemory((Int32)processHandle, Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + Convert.ToInt32(memoryAddress, 16), buffer, buffer.Length, ref bytesRead);
+                    ReadProcessMemory((Int32)processHandle, baseAddress ? (Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + memoryAddress) : memoryAddress, buffer, buffer.Length, ref bytesRead);
 
                     return (int)buffer[0];
                 }
@@ -74,38 +74,6 @@ namespace OmsiTimeSyncPlugin
             }
 
             return -1;
-        }
-
-        public byte[] ReadBytes(string memoryAddress, int length, bool untilNullByte = false)
-        {
-            if (processHandle != IntPtr.Zero)
-            {
-                try
-                {
-                    int bytesRead = 0;
-                    byte[] buffer = new byte[length];
-
-                    ReadProcessMemory((Int32)processHandle, Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + Convert.ToInt32(memoryAddress, 16), buffer, buffer.Length, ref bytesRead);
-
-                    if (untilNullByte)
-                    {
-                        for (int i = 0; i < bytesRead; i++)
-                        {
-                            if (buffer[i] == 0x0 && i > 0)
-                            {
-                                return buffer.Skip(0).Take(i).ToArray();
-                            }
-                        }
-                    }
-
-                    return buffer;
-                }
-                catch { }
-
-                return null;
-            }
-
-            return null;
         }
 
         public byte[] ReadBytes(int memoryAddress, int length, bool baseAddress = true, bool untilNullByte = false)
@@ -140,7 +108,7 @@ namespace OmsiTimeSyncPlugin
             return null;
         }
 
-        public float ReadFloat(string memoryAddress)
+        public float ReadFloat(int memoryAddress, bool baseAddress = true)
         {
             if (processHandle != IntPtr.Zero)
             {
@@ -149,7 +117,7 @@ namespace OmsiTimeSyncPlugin
                     int bytesRead = 0;
                     byte[] buffer = new byte[4];
 
-                    ReadProcessMemory((Int32)processHandle, Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + Convert.ToInt32(memoryAddress, 16), buffer, buffer.Length, ref bytesRead);
+                    ReadProcessMemory((Int32)processHandle, baseAddress ? (Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + memoryAddress) : memoryAddress, buffer, buffer.Length, ref bytesRead);
 
                     return BitConverter.ToSingle(buffer, 0);
                 }
@@ -159,27 +127,6 @@ namespace OmsiTimeSyncPlugin
             }
 
             return -1f;
-        }
-
-        public int ReadInt(string memoryAddress, bool baseAddress = true)
-        {
-            if (processHandle != IntPtr.Zero)
-            {
-                try
-                {
-                    int bytesRead = 0;
-                    byte[] buffer = new byte[4];
-
-                    ReadProcessMemory((Int32)processHandle, baseAddress ? (Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + Convert.ToInt32(memoryAddress, 16)) : Convert.ToInt32(memoryAddress, 16), buffer, buffer.Length, ref bytesRead);
-
-                    return BitConverter.ToInt32(buffer, 0);
-                }
-                catch { }
-
-                return -2;
-            }
-
-            return -1;
         }
 
         public int ReadInt(int memoryAddress, bool baseAddress = true)
@@ -203,7 +150,7 @@ namespace OmsiTimeSyncPlugin
             return -1;
         }
 
-        public bool WriteMemory(string memoryAddress, string dataType, string newValue)
+        public bool WriteMemory(int memoryAddress, string dataType, string newValue, bool baseAddress = true)
         {
             if (processHandle != IntPtr.Zero)
             {
@@ -235,7 +182,7 @@ namespace OmsiTimeSyncPlugin
                             return false;
                     }
 
-                    return WriteProcessMemory((Int32)processHandle, Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + Convert.ToInt32(memoryAddress, 16), buffer, buffer.Length, ref bytesRead);
+                    return WriteProcessMemory((Int32)processHandle, baseAddress ? (Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + memoryAddress) : memoryAddress, buffer, buffer.Length, ref bytesRead);
                 }
                 catch { }
             }
@@ -243,7 +190,7 @@ namespace OmsiTimeSyncPlugin
             return false;
         }
 
-        public bool WriteMemory(string memoryAddress, string dataType, byte[] buffer)
+        public bool WriteMemory(int memoryAddress, string dataType, byte[] buffer, bool baseAddress = true)
         {
             if (processHandle != IntPtr.Zero)
             {
@@ -251,7 +198,7 @@ namespace OmsiTimeSyncPlugin
                 {
                     int bytesRead = 0;
 
-                    return WriteProcessMemory((Int32)processHandle, Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + Convert.ToInt32(memoryAddress, 16), buffer, buffer.Length, ref bytesRead);
+                    return WriteProcessMemory((Int32)processHandle, baseAddress ? (Process.GetProcessById(processID).MainModule.BaseAddress.ToInt32() + memoryAddress) : memoryAddress, buffer, buffer.Length, ref bytesRead);
                 }
                 catch { }
             }

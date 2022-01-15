@@ -17,6 +17,7 @@ namespace OmsiTimeSyncPlugin
         {
             get
             {
+                // Force a drop shadow of the UI
                 const int CS_DROPSHADOW = 0x20000;
                 CreateParams cp = base.CreateParams;
                 cp.ClassStyle |= CS_DROPSHADOW;
@@ -119,7 +120,7 @@ namespace OmsiTimeSyncPlugin
             {
                 try
                 {
-                    omsiTimeDateBytes = m.ReadBytes(Omsi.getMemoryAddress(omsiVersion, "hour"), 40);
+                    omsiTimeDateBytes = m.ReadBytes(Omsi.getMemoryAddress(omsiVersion, "datetime"), 40);
 
                     int i = 0;
                     string dateStr = "";
@@ -216,7 +217,7 @@ namespace OmsiTimeSyncPlugin
                             BitConverter.GetBytes(newSystemTime.Year).CopyTo(writeBytes, i); // 35 - 39
 
                             // Set the new date and time
-                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "hour"), "bytes", writeBytes);
+                            m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "datetime"), "bytes", writeBytes);
                         }
                     }
 
@@ -239,14 +240,14 @@ namespace OmsiTimeSyncPlugin
                 AppConfig.alwaysOnTop = Convert.ToBoolean(txtRdr.ReadLine());
                 AppConfig.autoSyncOmsiTime = Convert.ToBoolean(txtRdr.ReadLine());
                 AppConfig.onlyResyncOmsiTimeIfBehindActualTime = Convert.ToBoolean(txtRdr.ReadLine());
-                AppConfig.offsetHour = Math.Max(-23, Math.Min(23, Convert.ToInt32(txtRdr.ReadLine())));
-                AppConfig.offsetHourIndex = Convert.ToInt32(txtRdr.ReadLine());
+                _ = Math.Max(-23, Math.Min(23, Convert.ToInt32(txtRdr.ReadLine())));                        // Formely offsetHour
+                _ = Convert.ToInt32(txtRdr.ReadLine());                                                     // Formely offsetHourIndex
                 AppConfig.windowPositionLeft = Convert.ToInt32(txtRdr.ReadLine());
                 AppConfig.windowPositionTop = Convert.ToInt32(txtRdr.ReadLine());
-                AppConfig.manualSyncHotkeyIndex = Convert.ToInt32(txtRdr.ReadLine());
+                _ = Convert.ToInt32(txtRdr.ReadLine());                                                     // Formely manualSyncHotkeyIndex
                 AppConfig.autoSyncModeIndex = Convert.ToInt32(txtRdr.ReadLine());
-                AppConfig.manualSyncHotkeySound = Convert.ToBoolean(txtRdr.ReadLine());
-                AppConfig.autoDetectOffsetHours = Convert.ToBoolean(txtRdr.ReadLine());
+                _ = Convert.ToBoolean(txtRdr.ReadLine());                                                   // Formely manualSyncHotkeySound
+                _ = Convert.ToBoolean(txtRdr.ReadLine());                                                   // Formely autoDetectOffsetHours
 
                 return true;
             }
@@ -256,14 +257,9 @@ namespace OmsiTimeSyncPlugin
                 AppConfig.alwaysOnTop = AppConfigDefaults.alwaysOnTop;
                 AppConfig.autoSyncOmsiTime = AppConfigDefaults.autoSyncOmsiTime;
                 AppConfig.onlyResyncOmsiTimeIfBehindActualTime = AppConfigDefaults.onlyResyncOmsiTimeIfBehindActualTime;
-                AppConfig.offsetHour = AppConfigDefaults.offsetHour;
-                AppConfig.offsetHourIndex = AppConfigDefaults.offsetHourIndex;
                 AppConfig.windowPositionLeft = AppConfigDefaults.windowPositionLeft;
                 AppConfig.windowPositionTop = AppConfigDefaults.windowPositionTop;
-                AppConfig.manualSyncHotkeyIndex = AppConfigDefaults.manualSyncHotkeyIndex;
                 AppConfig.autoSyncModeIndex = AppConfigDefaults.autoSyncModeIndex;
-                AppConfig.manualSyncHotkeySound = AppConfigDefaults.manualSyncHotkeySound;
-                AppConfig.autoDetectOffsetHours = AppConfigDefaults.autoDetectOffsetHours;
 
                 return false;
             }
@@ -279,14 +275,14 @@ namespace OmsiTimeSyncPlugin
                 txtWtr.WriteLine(AppConfig.alwaysOnTop.ToString());
                 txtWtr.WriteLine(AppConfig.autoSyncOmsiTime.ToString());
                 txtWtr.WriteLine(AppConfig.onlyResyncOmsiTimeIfBehindActualTime.ToString());
-                txtWtr.WriteLine(AppConfig.offsetHour.ToString());
-                txtWtr.WriteLine(AppConfig.offsetHourIndex.ToString());
+                txtWtr.WriteLine(0);                                                                        // Formely offsetHour
+                txtWtr.WriteLine(0);                                                                        // Formely offsetHourIndex
                 txtWtr.WriteLine(AppConfig.windowPositionLeft.ToString());
                 txtWtr.WriteLine(AppConfig.windowPositionTop.ToString());
-                txtWtr.WriteLine(AppConfig.manualSyncHotkeyIndex.ToString());
+                txtWtr.WriteLine(0);                                                                        // Formely manualSyncHotkeyIndex
                 txtWtr.WriteLine(AppConfig.autoSyncModeIndex.ToString());
-                txtWtr.WriteLine(AppConfig.manualSyncHotkeySound.ToString());
-                txtWtr.WriteLine(AppConfig.autoDetectOffsetHours.ToString());
+                txtWtr.WriteLine(false);                                                                    // Formely manualSyncHotkeySound
+                txtWtr.WriteLine(true);                                                                     // Formely autoDetectOffsetHours
 
                 txtWtr.Close();
 
@@ -295,13 +291,13 @@ namespace OmsiTimeSyncPlugin
             catch { return false; }
         }
 
-        // Background timer that runs every 60 seconds
+        // Background timer that runs every 60 seconds which auto saves the app's config
         private void tmrAutoSave_Tick(object state)
         {
             saveConfig();
         }
 
-        // Background timer that runs every 1 second
+        // Background timer that runs every 1 second in regards to OMSI stuff
         private void tmrBackground_Tick(object state)
         {
             // If process isn't already attached
@@ -318,40 +314,28 @@ namespace OmsiTimeSyncPlugin
                 }
             }
 
-            // If auto detection of offset hours is enabled then:
-            // 
-            if (AppConfig.autoDetectOffsetHours)
+            // Auto detect hours offset
+            if (processAttached &&
+                omsiLoaded &&
+                Omsi.isVersionSupported(omsiVersion) &&
+                systemTime == DateTime.MinValue)
             {
-                if (processAttached &&
-                    omsiLoaded &&
-                    Omsi.isVersionSupported(omsiVersion) &&
-                    systemTime == DateTime.MinValue)
-                {
-                    systemTime = DateTime.Now;
+                systemTime = DateTime.Now;
 
-                    hoursDifference = Math.Round((omsiTime - systemTime).TotalHours);
+                hoursDifference = Math.Round((omsiTime - systemTime).TotalHours);
 
-                    systemTime = systemTime.AddHours(hoursDifference);
-                }
-                else if (!processAttached ||
-                    !omsiLoaded ||
-                    !Omsi.isVersionSupported(omsiVersion))
-                {
-                    systemTime = DateTime.MinValue;
+                systemTime = systemTime.AddHours(hoursDifference);
+            }
+            else if (!processAttached ||
+                !omsiLoaded ||
+                !Omsi.isVersionSupported(omsiVersion))
+            {
+                systemTime = DateTime.MinValue;
 
-                    lblSystemTime.Text = "Waiting for OMSI map...";
-                }
+                lblSystemTime.Text = "Waiting for OMSI map...";
             }
 
-            if (!AppConfig.autoDetectOffsetHours)
-            {
-                // Adjust the actual time by the number of 'offset hours' that is set in the UI
-                systemTime = DateTime.Now.AddHours(AppConfig.offsetHour);
-
-                // Display the actual time in the UI
-                lblSystemTime.Text = systemTime.ToString();
-            }
-            else if (AppConfig.autoDetectOffsetHours && systemTime != DateTime.MinValue)
+            if (systemTime != DateTime.MinValue)
             {
                 systemTime = DateTime.Now.AddHours(hoursDifference);
 
@@ -446,8 +430,8 @@ namespace OmsiTimeSyncPlugin
                     // Try and identify the map that OMSI has loaded
                     try
                     {
-                        int firstValue = m.ReadInt(0x00461588, true);
-                        int secondValue = m.ReadInt(firstValue + 0x154, false);
+                        int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "ptr1_to_map_path"), true);
+                        int secondValue = m.ReadInt(firstValue + Omsi.getMemoryAddress(omsiVersion, "ptr2_to_map_path"), false);
                         byte[] thirdValue = m.ReadBytes(secondValue + 0x0, 64, false, true);
 
                         omsiMap = Encoding.UTF8.GetString(thirdValue).Replace('\\', '/').ToLower().Replace("global.cfg", "");
@@ -472,11 +456,8 @@ namespace OmsiTimeSyncPlugin
                     // Go ahead with syncing OMSI time
                     syncOmsiTime();
                 }
-                //else
-                //{
-                //    getOmsiTime();
-                //}
 
+                // Show MPH or KMH in the UI's title bar
                 if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
                 {
                     formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph * 0.6213711922).ToString().PadRight(3) + "MPH";
@@ -486,6 +467,7 @@ namespace OmsiTimeSyncPlugin
                     formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph).ToString().PadRight(3) + "KMH";
                 }
 
+                // Show current OMSI time in UI's title bar
                 formTitleBarCurrentOmsiTime.Text = omsiTime.ToString("HH:mm:ss");
 
                 string omsiDelayStr = "-";
@@ -493,12 +475,14 @@ namespace OmsiTimeSyncPlugin
 
                 string omsiNextBusStop = "-";
 
+                // If a timetable schedule is active
                 if (OmsiTelemetry.scheduleActive == 1.0f)
                 {
+                    // Try to get the current delay (in seconds) of how early or late it currently is
                     try
                     {
-                        int firstValue = m.ReadInt(0x00461500, true);
-                        int secondValue = m.ReadInt(firstValue + 0x6BC, false);
+                        int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "timetable_manager"), true);
+                        int secondValue = m.ReadInt(firstValue + Omsi.getMemoryAddress(omsiVersion, "ttm_delay"), false);
 
                         omsiDelay = secondValue;
 
@@ -508,10 +492,11 @@ namespace OmsiTimeSyncPlugin
                     }
                     catch { omsiDelayStr = "-"; omsiDelay = 0; }
 
+                    // Try to also get the next bus stop ID and compare with what's in the BusStops.cfg file or TTP files for the current map
                     try
                     {
-                        int firstValue = m.ReadInt(0x00461500, true);
-                        int secondValue = m.ReadInt(firstValue + 0x6B0, false);
+                        int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "timetable_manager"), true);
+                        int secondValue = m.ReadInt(firstValue + Omsi.getMemoryAddress(omsiVersion, "ttm_next_bus_stop_id"), false);
 
                         string busStopName;
 
@@ -538,18 +523,23 @@ namespace OmsiTimeSyncPlugin
                     catch { omsiNextBusStop = "-"; }
                 }
 
+                // Set the text colour based on early, late or other/on time on the UI
                 if (omsiDelay < 0) formTitleBarCurrentOmsiDelay.ForeColor = Color.FromArgb(192, 255, 192);
                 else if (omsiDelay > 0) formTitleBarCurrentOmsiDelay.ForeColor = Color.FromArgb(255, 192, 192);
                 else formTitleBarCurrentOmsiDelay.ForeColor = Color.White;
 
+                // Add a - or + displayed 'delay', or just '-' if delay is unknown
                 if (omsiDelay < 0 && omsiDelayStr != "-") formTitleBarCurrentOmsiDelay.Text = "-" + omsiDelayStr;
                 else if (omsiDelay >= 0 && omsiDelayStr != "-") formTitleBarCurrentOmsiDelay.Text = "+" + omsiDelayStr;
                 else formTitleBarCurrentOmsiDelay.Text = "-";
 
+                // Specify next bus stop name in the UI, if known
                 formTitleBarNextBusStop.Text = omsiNextBusStop;
 
+                // If bus stop has been requested by someone
                 if (OmsiTelemetry.busStoppingLight != 0.0f)
                 {
+                    // Flash the '- STOP -' text on the title bar on the UI
                     if (formTitleBarBusStopRequest.ForeColor == Color.FromArgb(64, 64, 64))
                     {
                         formTitleBarBusStopRequest.ForeColor = Color.White;
@@ -561,6 +551,7 @@ namespace OmsiTimeSyncPlugin
                 }
                 else
                 {
+                    // Otherwise keep it 'dark gray' if nobody has
                     formTitleBarBusStopRequest.ForeColor = Color.FromArgb(64, 64, 64);
                 }
 
@@ -575,6 +566,7 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // Reset title bar values to default
         private void resetFormTitleBarValues()
         {
             if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
@@ -606,13 +598,6 @@ namespace OmsiTimeSyncPlugin
             AppConfig.onlyResyncOmsiTimeIfBehindActualTime = chkOnlyResyncOmsiTimeIfBehindActualTime.Checked;
         }
 
-        // For handling the 'offset hours' setting
-        private void cmbOffsetHours_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            AppConfig.offsetHour = Convert.ToInt32(cmbOffsetHours.SelectedItem);
-            AppConfig.offsetHourIndex = cmbOffsetHours.SelectedIndex;
-        }
-
         // For manually syncing OMSI's time when pressing the button on the UI
         private void btnManualSyncOmsiTime_Click(object sender, EventArgs e)
         {
@@ -620,7 +605,7 @@ namespace OmsiTimeSyncPlugin
             if (!syncOmsiTime())
             {
                 // Show an error message stating that it failed for some reason
-                MessageBox.Show("ERROR: Unable to sync OMSI time. Please check that OMSI is running and a map has been loaded.", "OMSI Time Sync - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("ERROR: Unable to sync OMSI time. Please check that a map has been loaded.", "OMSI Time Sync - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -628,15 +613,6 @@ namespace OmsiTimeSyncPlugin
         private void cmbAutoSyncMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             AppConfig.autoSyncModeIndex = cmbAutoSyncMode.SelectedIndex;
-        }
-
-        // For handling the auto detect offset time setting
-        private void chkAutoDetectOffsetTime_CheckedChanged(object sender, EventArgs e)
-        {
-            // Disable combo box for manually adjusting the time offset if auto detect is enabled and vice versa
-            cmbOffsetHours.Enabled = !chkAutoDetectOffsetTime.Checked;
-
-            AppConfig.autoDetectOffsetHours = chkAutoDetectOffsetTime.Checked;
         }
 
         // Github link
@@ -670,34 +646,24 @@ namespace OmsiTimeSyncPlugin
             }
 
             // Setup the dropdown lists so they are configured based on the app's config
-            cmbOffsetHours.SelectedIndex = AppConfig.offsetHourIndex;
             cmbAutoSyncMode.SelectedIndex = AppConfig.autoSyncModeIndex;
 
             // Same with checkboxes
             chkAutoSyncOmsiTime.Checked = AppConfig.autoSyncOmsiTime;
             chkOnlyResyncOmsiTimeIfBehindActualTime.Checked = AppConfig.onlyResyncOmsiTimeIfBehindActualTime;
-            chkAutoDetectOffsetTime.Checked = AppConfig.autoDetectOffsetHours;
-
-            if (AppConfig.alwaysOnTop != AppConfigDefaults.alwaysOnTop)
-            {
-                refreshButtonAlwaysOnTop();
-            }
-
-            // Add 'key released' event for manual sync hotkey
-            //gkhManualSyncHotkey.KeyUp += new KeyEventHandler(manualSyncHotkey_KeyUp);
 
             // If OmsiTimeSync.cfg doesn't exist
             if (!File.Exists("OmsiTimeSync.cfg"))
             {
                 // Show initial message box dialog (yes/no)
                 if (MessageBox.Show(
-                    "Thanks for downloading and running OMSI Time Sync.\n" +
+                    "Thanks for downloading OMSI Time Sync.\n" +
                     "\n" +
-                    "It's important that you close any games that have anti-cheat protection before pressing 'Yes'! This program performs memory editing which might be falsely flagged as a hack.\n" +
+                    "It's important that you close any games that have anti-cheat protection before pressing 'Yes'! This plugin performs memory editing which might be falsely flagged as a hack.\n" +
                     "\n" +
-                    "This notice will not be shown again unless the 'OmsiTimeSync.cfg' file is deleted in OMSI's directory. The author of this program will not be liable.\n" +
+                    "This notice will not be shown again unless the 'OmsiTimeSync.cfg' file is deleted in OMSI's directory. The author of this plugin will not be liable.\n" +
                     "\n" +
-                    "While this is a free program, a donation is highly appreciated if you like this program.\n" +
+                    "While this is a free OMSI plugin, a donation is highly appreciated if you like this plugin.\n" +
                     "\n" +
                     "Do you acknowledge the above notice and agree?",
                     "OMSI Time Sync", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
@@ -718,23 +684,25 @@ namespace OmsiTimeSyncPlugin
 
             // v2.3.004
             // Date/Time
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("hour", "0x0046176C"));     // byte (h)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("minute", "0x0046176D"));   // byte (m)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("second", "0x00461770"));   // float (second.millisecond)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("year", "0x00461790"));     // int (yyyy)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("month", "0x0046178C"));    // int (m)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("day", "0x00461778"));      // int (d)
-
-            // 0x4 difference?
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("datetime", 0x0046176C));                      // array of bytes
+            // Timetable Manager
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("timetable_manager", 0x00461500));             // int (memory address for timetable stuff)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ttm_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ttm_delay", 0x6BC));                          // offset - int (delay in seconds)
+            // Environment ???
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ptr1_to_map_path", 0x00461588));              // int (memory address pointer leading to map path)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
 
             // v2.2.032
             // Date/Time
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("hour", "0x00461768"));     // byte (h)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("minute", "0x00461769"));   // byte (m)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("second", "0x0046176C"));   // float (second.millisecond)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("year", "0x0046178C"));     // int (yyyy)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("month", "0x00461788"));    // int (m)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("day", "0x00461774"));      // int (d)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("datetime", 0x00461768));                      // array of bytes
+            // Timetable Manager
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("timetable_manager", 0x004614FC));             // int (memory address for timetable stuff)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ttm_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ttm_delay", 0x6BC));                          // offset - int (delay in seconds)
+            // Environment ???
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr1_to_map_path", 0x00461584));              // int (memory address pointer leading to map path)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
 
             // Setup the autosave timer
             tmrAutoSave = new System.Threading.Timer(new System.Threading.TimerCallback(tmrAutoSave_Tick), null, 60000, 60000);
@@ -756,6 +724,7 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // For moving the UI window around
         private void frmMain_LocationChanged(object sender, EventArgs e)
         {
             // If the timer is enabled
@@ -767,6 +736,7 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // For moving the UI window around
         private void formTitleBar_MouseMove(object sender, MouseEventArgs e)
         {
             if (isFormBeingDragged)
@@ -778,6 +748,7 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // For moving the UI window around
         private void formTitleBar_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -791,6 +762,7 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // For moving the UI window around
         private void formTitleBar_MouseUp(object sender, MouseEventArgs e)
         {
             isFormBeingDragged = false;
@@ -804,11 +776,14 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // Bring to front and focused as well as applying the 'always on top' state
         private void frmMain_Shown(object sender, EventArgs e)
         {
-            Focus();
+            Activate();
             BringToFront();
-            TopLevel = true;
+            Focus();
+
+            refreshButtonAlwaysOnTop();
         }
 
         private void formTitleBarMinimise_MouseEnter(object sender, EventArgs e)
@@ -841,6 +816,7 @@ namespace OmsiTimeSyncPlugin
             formTitleBarPinUnpin.ForeColor = Color.White;
         }
 
+        // Minimise the UI
         private void formTitleBarMinimise_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -849,6 +825,7 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // Expand or compact the UI
         private void formTitleBarExpandCompact_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -866,6 +843,7 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // Toggle 'always on top' for the UI
         private void formTitleBarPinUnpin_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -876,10 +854,10 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // Update state of 'always on top'
         private void refreshButtonAlwaysOnTop()
         {
             TopMost = AppConfig.alwaysOnTop;
-            TopLevel = true;
 
             if (AppConfig.alwaysOnTop)
             {
@@ -891,6 +869,7 @@ namespace OmsiTimeSyncPlugin
             }
         }
 
+        // Toggle between MPH or KPH as shown on the title bar if the text is double clicked
         private void formTitleBarCurrentOmsiSpeed_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
@@ -910,10 +889,10 @@ namespace OmsiTimeSyncPlugin
         // For example, hour, month, day, minute, etc.
         public readonly string addressType;
         // For example, base+0x00000000
-        public readonly string addressLocation;
+        public readonly int addressLocation;
 
         // Constructor
-        public OmsiAddress(string addressType, string addressLocation)
+        public OmsiAddress(string addressType, int addressLocation)
         {
             this.addressType = addressType;
             this.addressLocation = addressLocation;
@@ -945,7 +924,7 @@ namespace OmsiTimeSyncPlugin
 
         // Find a memory address from what's supported by this program and return the address (if supported)
         // Otherwise return null
-        public static string getMemoryAddress(string version, string addressType)
+        public static int getMemoryAddress(string version, string addressType)
         {
             List<OmsiAddress> addresses;
 
@@ -959,7 +938,7 @@ namespace OmsiTimeSyncPlugin
                 }
             }
 
-            return null;
+            return -1;
         }
 
         // Simple check to verify if the OMSI version is supported by this program
@@ -977,29 +956,19 @@ namespace OmsiTimeSyncPlugin
         public static bool alwaysOnTop = AppConfigDefaults.alwaysOnTop;
         public static bool autoSyncOmsiTime = AppConfigDefaults.autoSyncOmsiTime;
         public static bool onlyResyncOmsiTimeIfBehindActualTime = AppConfigDefaults.onlyResyncOmsiTimeIfBehindActualTime;
-        public static int offsetHour = AppConfigDefaults.offsetHour;
-        public static int offsetHourIndex = AppConfigDefaults.offsetHourIndex;
         public static int windowPositionLeft = AppConfigDefaults.windowPositionLeft;
         public static int windowPositionTop = AppConfigDefaults.windowPositionTop;
-        public static int manualSyncHotkeyIndex = AppConfigDefaults.manualSyncHotkeyIndex;
         public static int autoSyncModeIndex = AppConfigDefaults.autoSyncModeIndex;
-        public static bool manualSyncHotkeySound = AppConfigDefaults.manualSyncHotkeySound;
-        public static bool autoDetectOffsetHours = AppConfigDefaults.autoDetectOffsetHours;
     }
 
     // This app's default config
     static class AppConfigDefaults
     {
-        public static bool alwaysOnTop = false;
+        public static bool alwaysOnTop = true;
         public static bool autoSyncOmsiTime = true;
         public static bool onlyResyncOmsiTimeIfBehindActualTime = true;
-        public static int offsetHour = 0;
-        public static int offsetHourIndex = 23;
         public static int windowPositionLeft = -1;
         public static int windowPositionTop = -1;
-        public static int manualSyncHotkeyIndex = 0;
         public static int autoSyncModeIndex = 0;
-        public static bool manualSyncHotkeySound = false;
-        public static bool autoDetectOffsetHours = true;
     }
 }
