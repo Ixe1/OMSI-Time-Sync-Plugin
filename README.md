@@ -24,7 +24,7 @@ https://user-images.githubusercontent.com/96985590/147923517-8446a49a-b5c6-478c-
 - .NET Framework 4.7.2 Runtime (https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472)
 
 # Installation Steps
-1. Download the latest release from [here](https://github.com/Ixe1/OMSI-Time-Sync/releases)
+1. Download the latest release from [here](https://github.com/Ixe1/OMSI-Time-Sync-Plugin/releases)
 2. Extract the ZIP file to somewhere convenient
 3. Copy the OmsiTimeSyncPlugin.dll and OmsiTimeSyncPlugin.opl files to your OMSI2's plugins directory
 4. Run OMSI2, ideally without Bus Company Simulator initially
