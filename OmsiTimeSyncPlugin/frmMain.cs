@@ -670,7 +670,7 @@ namespace OmsiTimeSyncPlugin
         private void frmMain_LocationChanged(object sender, EventArgs e)
         {
             // If the timer is enabled
-            if (tmrBackground != null)
+            if (tmrBackground != null && WindowState != FormWindowState.Minimized)
             {
                 // Set current window position in app's config
                 AppConfig.windowPositionTop = Top;
