@@ -651,64 +651,6 @@ namespace OmsiTimeSyncPlugin
             // Same with checkboxes
             chkAutoSyncOmsiTime.Checked = AppConfig.autoSyncOmsiTime;
             chkOnlyResyncOmsiTimeIfBehindActualTime.Checked = AppConfig.onlyResyncOmsiTimeIfBehindActualTime;
-
-            // If OmsiTimeSync.cfg doesn't exist
-            if (!File.Exists("OmsiTimeSync.cfg"))
-            {
-                // Show initial message box dialog (yes/no)
-                if (MessageBox.Show(
-                    "Thanks for downloading OMSI Time Sync.\n" +
-                    "\n" +
-                    "It's important that you close any games that have anti-cheat protection before pressing 'Yes'! This plugin performs memory editing which might be falsely flagged as a hack.\n" +
-                    "\n" +
-                    "This notice will not be shown again unless the 'OmsiTimeSync.cfg' file is deleted in OMSI's directory. The author of this plugin will not be liable.\n" +
-                    "\n" +
-                    "While this is a free OMSI plugin, a donation is highly appreciated if you like this plugin.\n" +
-                    "\n" +
-                    "Do you acknowledge the above notice and agree?",
-                    "OMSI Time Sync", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                {
-                    // If 'no' is chosen then close the app
-                    this.Close();
-                    Application.Exit();
-
-                    // Don't execute further code
-                    return;
-                }
-            }
-
-            // For accessing and writing to OMSI's memory later on
-            m = new Mem();
-
-            // Add supported OMSI memory addresses
-
-            // v2.3.004
-            // Date/Time
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("datetime", 0x0046176C));                      // array of bytes
-            // Timetable Manager
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("timetable_manager", 0x00461500));             // int (memory address for timetable stuff)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ttm_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ttm_delay", 0x6BC));                          // offset - int (delay in seconds)
-            // Environment ???
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ptr1_to_map_path", 0x00461588));              // int (memory address pointer leading to map path)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
-
-            // v2.2.032
-            // Date/Time
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("datetime", 0x00461768));                      // array of bytes
-            // Timetable Manager
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("timetable_manager", 0x004614FC));             // int (memory address for timetable stuff)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ttm_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ttm_delay", 0x6BC));                          // offset - int (delay in seconds)
-            // Environment ???
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr1_to_map_path", 0x00461584));              // int (memory address pointer leading to map path)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
-
-            // Setup the autosave timer
-            tmrAutoSave = new System.Threading.Timer(new System.Threading.TimerCallback(tmrAutoSave_Tick), null, 60000, 60000);
-
-            // Setup the background timer which does various stuff
-            tmrBackground = new System.Threading.Timer(new System.Threading.TimerCallback(tmrBackground_Tick), null, 1000, 1000);
         }
 
         // Form closing event
@@ -784,6 +726,64 @@ namespace OmsiTimeSyncPlugin
             Focus();
 
             refreshButtonAlwaysOnTop();
+
+            // If OmsiTimeSync.cfg doesn't exist
+            if (!File.Exists("OmsiTimeSync.cfg"))
+            {
+                // Show initial message box dialog (yes/no)
+                if (MessageBox.Show(
+                    "Thanks for downloading OMSI Time Sync.\n" +
+                    "\n" +
+                    "It's important that you close any games that have anti-cheat protection before pressing 'Yes'! This plugin performs memory editing which might be falsely flagged as a hack.\n" +
+                    "\n" +
+                    "This notice will not be shown again unless the 'OmsiTimeSync.cfg' file is deleted in OMSI's directory. The author of this plugin will not be liable.\n" +
+                    "\n" +
+                    "While this is a free OMSI plugin, a donation is highly appreciated if you like this plugin.\n" +
+                    "\n" +
+                    "Do you acknowledge the above notice and agree?",
+                    "OMSI Time Sync", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    // If 'no' is chosen then close the app
+                    this.Close();
+                    Application.Exit();
+
+                    // Don't execute further code
+                    return;
+                }
+            }
+
+            // For accessing and writing to OMSI's memory later on
+            m = new Mem();
+
+            // Add supported OMSI memory addresses
+
+            // v2.3.004
+            // Date/Time
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("datetime", 0x0046176C));                      // array of bytes
+            // Timetable Manager
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("timetable_manager", 0x00461500));             // int (memory address for timetable stuff)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ttm_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ttm_delay", 0x6BC));                          // offset - int (delay in seconds)
+            // Environment ???
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ptr1_to_map_path", 0x00461588));              // int (memory address pointer leading to map path)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
+
+            // v2.2.032
+            // Date/Time
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("datetime", 0x00461768));                      // array of bytes
+            // Timetable Manager
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("timetable_manager", 0x004614FC));             // int (memory address for timetable stuff)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ttm_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ttm_delay", 0x6BC));                          // offset - int (delay in seconds)
+            // Environment ???
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr1_to_map_path", 0x00461584));              // int (memory address pointer leading to map path)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
+
+            // Setup the autosave timer
+            tmrAutoSave = new System.Threading.Timer(new System.Threading.TimerCallback(tmrAutoSave_Tick), null, 60000, 60000);
+
+            // Setup the background timer which does various stuff
+            tmrBackground = new System.Threading.Timer(new System.Threading.TimerCallback(tmrBackground_Tick), null, 1000, 1000);
         }
 
         private void formTitleBarMinimise_MouseEnter(object sender, EventArgs e)
