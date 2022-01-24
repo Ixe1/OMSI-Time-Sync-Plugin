@@ -73,6 +73,45 @@ namespace OmsiTimeSyncPlugin
                 case 3:
                     OmsiTelemetry.busStoppingLight = value;
                     break;
+
+                case 4:
+                    // For setting the bus engine's temperature if specified
+                    if (OmsiTelemetry.setBusEngineTemperature != -1.0f)
+                    {
+                        value = OmsiTelemetry.setBusEngineTemperature;
+                        writeValue = true;
+
+                        OmsiTelemetry.setBusEngineTemperature = -1.0f;
+                    }
+
+                    OmsiTelemetry.busEngineTemperature = value;
+                    break;
+
+                case 5:
+                    // For setting the bus cabin's temperature if specified
+                    if (OmsiTelemetry.setBusCabinTemperature != -1.0f)
+                    {
+                        value = OmsiTelemetry.setBusCabinTemperature;
+                        writeValue = true;
+
+                        OmsiTelemetry.setBusCabinTemperature = -1.0f;
+                    }
+
+                    OmsiTelemetry.busCabinTemperature = value;
+                    break;
+
+                case 6:
+                    // For setting the bus cabin's absolute humidity if specified
+                    if (OmsiTelemetry.setBusCabinAbsHumidity != -1.0f)
+                    {
+                        value = OmsiTelemetry.setBusCabinAbsHumidity;
+                        writeValue = true;
+
+                        OmsiTelemetry.setBusCabinAbsHumidity = -1.0f;
+                    }
+
+                    OmsiTelemetry.busCabinAbsHumidity = value;
+                    break;
             }
         }
 
@@ -116,8 +155,6 @@ namespace OmsiTimeSyncPlugin
     // OMSI's telemetry
     static class OmsiTelemetry
     {
-        private static DateTime paxExitLastReq = DateTime.MinValue;
-
         public static bool omsiClosing = false;
 
         // Varlist
@@ -125,13 +162,20 @@ namespace OmsiTimeSyncPlugin
         public static float scheduleActive = 0.0f;          // 1
         public static float humansCount = 0.0f;             // 2
         public static float busStoppingLight = 0.0f;        // 3
+        public static float busEngineTemperature = 0.0f;    // 4
+        public static float busCabinTemperature = 0.0f;     // 5
+        public static float busCabinAbsHumidity = 0.0f;     // 6
 
         // Systemvarlist
         public static float isPaused = 0.0f;                // 0
 
         // Pending actions/changes
         // Any value other than -1.0f indicates a change is needed at the next opportunity
+        public static float setBusCabinTemperature = -1.0f;
+        public static float setBusCabinAbsHumidity = -1.0f;
+        public static float setBusEngineTemperature = -1.0f;
         public static float setIsPaused = -1.0f;
+
         public static bool isBusStopRequested()
         {
             return (

@@ -881,6 +881,26 @@ namespace OmsiTimeSyncPlugin
                 formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph * 0.6213711922).ToString().PadRight(3) + "MPH";
             }
         }
+
+        // Quickly preheat the bus (engine temperature, cabin temperature and absolute humidity)
+        private void btnPreheatBus_Click(object sender, EventArgs e)
+        {
+            // Prevent quick preheat during a tour/scheduled route
+            if (OmsiTelemetry.scheduleActive == 1.0f)
+            {
+                MessageBox.Show("Quickly preheating the bus is only possible while there's no active tour/schedule.", "OMSI Time Sync", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Set bus engine temperature to 80C
+            OmsiTelemetry.setBusEngineTemperature = 80.0f;
+
+            // Set bus cabin temperature to 19C
+            OmsiTelemetry.setBusCabinTemperature = 19.0f;
+
+            // Set bus absolute humidity
+            OmsiTelemetry.setBusCabinAbsHumidity = 8.0f;
+        }
     }
 
     // Struct for OMSI memory addresses

@@ -60,6 +60,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.formTitleBarNextBusStop = new System.Windows.Forms.Label();
             this.formTitleBarBusStopRequest = new System.Windows.Forms.Label();
+            this.btnPreheatBus = new System.Windows.Forms.Button();
+            this.lblPreheatButtonDescription = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formBorder)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formTitleBar)).BeginInit();
@@ -184,7 +186,7 @@
             this.lblVersionAuthorInfo.Name = "lblVersionAuthorInfo";
             this.lblVersionAuthorInfo.Size = new System.Drawing.Size(100, 39);
             this.lblVersionAuthorInfo.TabIndex = 14;
-            this.lblVersionAuthorInfo.Text = "Version 1.12\r\nCreated by Ixel";
+            this.lblVersionAuthorInfo.Text = "Version 1.13\r\nCreated by Ixel";
             this.lblVersionAuthorInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblVersionAuthorInfo.UseCompatibleTextRendering = true;
             // 
@@ -525,12 +527,39 @@
             this.formTitleBarBusStopRequest.MouseMove += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseMove);
             this.formTitleBarBusStopRequest.MouseUp += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseUp);
             // 
+            // btnPreheatBus
+            // 
+            this.btnPreheatBus.Location = new System.Drawing.Point(12, 199);
+            this.btnPreheatBus.Name = "btnPreheatBus";
+            this.btnPreheatBus.Size = new System.Drawing.Size(98, 23);
+            this.btnPreheatBus.TabIndex = 44;
+            this.btnPreheatBus.Text = "Preheat Bus";
+            this.btnPreheatBus.UseCompatibleTextRendering = true;
+            this.btnPreheatBus.UseVisualStyleBackColor = false;
+            this.btnPreheatBus.Click += new System.EventHandler(this.btnPreheatBus_Click);
+            // 
+            // lblPreheatButtonDescription
+            // 
+            this.lblPreheatButtonDescription.AutoSize = true;
+            this.lblPreheatButtonDescription.BackColor = System.Drawing.Color.White;
+            this.lblPreheatButtonDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPreheatButtonDescription.ForeColor = System.Drawing.Color.Black;
+            this.lblPreheatButtonDescription.Location = new System.Drawing.Point(116, 196);
+            this.lblPreheatButtonDescription.Name = "lblPreheatButtonDescription";
+            this.lblPreheatButtonDescription.Size = new System.Drawing.Size(134, 35);
+            this.lblPreheatButtonDescription.TabIndex = 45;
+            this.lblPreheatButtonDescription.Text = "Set bus engine temp to 80C\r\nSet bus cabin air temp to 19C\r\nSet bus cabin abs. hum" +
+    "idity";
+            this.lblPreheatButtonDescription.UseCompatibleTextRendering = true;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(550, 265);
+            this.Controls.Add(this.lblPreheatButtonDescription);
+            this.Controls.Add(this.btnPreheatBus);
             this.Controls.Add(this.formTitleBarBusStopRequest);
             this.Controls.Add(this.formTitleBarNextBusStop);
             this.Controls.Add(this.label6);
@@ -615,6 +644,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label formTitleBarNextBusStop;
         private System.Windows.Forms.Label formTitleBarBusStopRequest;
+        private System.Windows.Forms.Button btnPreheatBus;
+        private System.Windows.Forms.Label lblPreheatButtonDescription;
     }
 }
 

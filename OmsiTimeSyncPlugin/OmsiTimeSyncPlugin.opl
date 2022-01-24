@@ -1,13 +1,16 @@
-1.1.2.0
+1.1.3.0
 [dll]
 OmsiTimeSyncPlugin.dll
 
 [varlist]
-4
+7
 Velocity
 schedule_active
 humans_count
 haltewunschlampe
+engine_temperature
+Cabinair_Temp
+Cabinair_absHum
 
 [systemvarlist]
 1
