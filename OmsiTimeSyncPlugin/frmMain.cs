@@ -92,6 +92,8 @@ namespace OmsiTimeSyncPlugin
 
                         string md5Hash = sb.ToString().ToUpper();
 
+                        Log.Save("DEBUG", "OMSI 2's MD5 hash identified as " + md5Hash, AppConfig.loggingLevel);
+
                         switch (md5Hash)
                         {
                             // Without 4GB patch
@@ -823,9 +825,13 @@ namespace OmsiTimeSyncPlugin
 
             refreshButtonAlwaysOnTop();
 
+            Log.Save("INFO", "UI shown", AppConfig.loggingLevel);
+
             // If OmsiTimeSync.cfg doesn't exist
             if (!File.Exists("OmsiTimeSync.cfg"))
             {
+                Log.Save("INFO", "OmsiTimeSync.cfg file does not exist, showing first time message...", AppConfig.loggingLevel);
+
                 // Show initial message box dialog (yes/no)
                 if (MessageBox.Show(
                     "Thanks for downloading OMSI Time Sync.\n" +
@@ -839,6 +845,8 @@ namespace OmsiTimeSyncPlugin
                     "Do you acknowledge the above notice and agree?",
                     "OMSI Time Sync", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 {
+                    Log.Save("INFO", "First time message was declined, terminating plugin...", AppConfig.loggingLevel);
+
                     // If 'no' is chosen then close the app
                     this.Close();
                     Application.Exit();
@@ -846,12 +854,17 @@ namespace OmsiTimeSyncPlugin
                     // Don't execute further code
                     return;
                 }
+
+                Log.Save("INFO", "First time message was accepted, continuing...", AppConfig.loggingLevel);
             }
+
+            Log.Save("INFO", "Initialising Mem()...", AppConfig.loggingLevel);
 
             // For accessing and writing to OMSI's memory later on
             m = new Mem();
 
             // Add supported OMSI memory addresses
+            Log.Save("INFO", "Adding OMSI 2's recognised memory addresses...", AppConfig.loggingLevel);
 
             // v2.3.004
             // Date/Time
@@ -875,8 +888,12 @@ namespace OmsiTimeSyncPlugin
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr1_to_map_path", 0x00461584));              // int (memory address pointer leading to map path)
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
 
+            Log.Save("INFO", "Setting up autosave timer...", AppConfig.loggingLevel);
+
             // Setup the autosave timer
             tmrAutoSave = new System.Threading.Timer(new System.Threading.TimerCallback(tmrAutoSave_Tick), null, 60000, 60000);
+
+            Log.Save("INFO", "Setting up background timer...", AppConfig.loggingLevel);
 
             // Setup the background timer which does various stuff
             tmrBackground = new System.Threading.Timer(new System.Threading.TimerCallback(tmrBackground_Tick), null, 1000, 1000);
