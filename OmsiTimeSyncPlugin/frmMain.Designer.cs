@@ -62,6 +62,8 @@
             this.formTitleBarBusStopRequest = new System.Windows.Forms.Label();
             this.btnPreheatBus = new System.Windows.Forms.Button();
             this.lblPreheatButtonDescription = new System.Windows.Forms.Label();
+            this.cmbLoggingLevel = new System.Windows.Forms.ComboBox();
+            this.lblLoggingLevel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formBorder)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formTitleBar)).BeginInit();
@@ -224,6 +226,7 @@
             // 
             this.cmbAutoSyncMode.BackColor = System.Drawing.Color.White;
             this.cmbAutoSyncMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbAutoSyncMode.ForeColor = System.Drawing.Color.Black;
             this.cmbAutoSyncMode.FormattingEnabled = true;
             this.cmbAutoSyncMode.Items.AddRange(new object[] {
             "Always, every second",
@@ -552,12 +555,45 @@
     "idity";
             this.lblPreheatButtonDescription.UseCompatibleTextRendering = true;
             // 
+            // cmbLoggingLevel
+            // 
+            this.cmbLoggingLevel.BackColor = System.Drawing.Color.White;
+            this.cmbLoggingLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLoggingLevel.ForeColor = System.Drawing.Color.Black;
+            this.cmbLoggingLevel.FormattingEnabled = true;
+            this.cmbLoggingLevel.Items.AddRange(new object[] {
+            "No Logging",
+            "Error (Minimal)",
+            "Warn",
+            "Info",
+            "Debug (Everything)"});
+            this.cmbLoggingLevel.Location = new System.Drawing.Point(256, 210);
+            this.cmbLoggingLevel.Name = "cmbLoggingLevel";
+            this.cmbLoggingLevel.Size = new System.Drawing.Size(124, 21);
+            this.cmbLoggingLevel.TabIndex = 46;
+            this.cmbLoggingLevel.SelectedIndexChanged += new System.EventHandler(this.cmbLoggingLevel_SelectedIndexChanged);
+            // 
+            // lblLoggingLevel
+            // 
+            this.lblLoggingLevel.AutoSize = true;
+            this.lblLoggingLevel.BackColor = System.Drawing.Color.White;
+            this.lblLoggingLevel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLoggingLevel.ForeColor = System.Drawing.Color.Black;
+            this.lblLoggingLevel.Location = new System.Drawing.Point(256, 193);
+            this.lblLoggingLevel.Name = "lblLoggingLevel";
+            this.lblLoggingLevel.Size = new System.Drawing.Size(81, 17);
+            this.lblLoggingLevel.TabIndex = 47;
+            this.lblLoggingLevel.Text = "Logging Level:";
+            this.lblLoggingLevel.UseCompatibleTextRendering = true;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(550, 265);
+            this.Controls.Add(this.lblLoggingLevel);
+            this.Controls.Add(this.cmbLoggingLevel);
             this.Controls.Add(this.lblPreheatButtonDescription);
             this.Controls.Add(this.btnPreheatBus);
             this.Controls.Add(this.formTitleBarBusStopRequest);
@@ -646,6 +682,8 @@
         private System.Windows.Forms.Label formTitleBarBusStopRequest;
         private System.Windows.Forms.Button btnPreheatBus;
         private System.Windows.Forms.Label lblPreheatButtonDescription;
+        private System.Windows.Forms.ComboBox cmbLoggingLevel;
+        private System.Windows.Forms.Label lblLoggingLevel;
     }
 }
 

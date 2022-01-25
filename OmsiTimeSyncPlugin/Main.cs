@@ -32,7 +32,8 @@ namespace OmsiTimeSyncPlugin
         [DllExport(CallingConvention.StdCall)]
         public static void PluginFinalize()
         {
-            frmMain.Close();
+            if (frmMain != null)
+                frmMain.Close();
 
             OmsiTelemetry.omsiClosing = true;
         }

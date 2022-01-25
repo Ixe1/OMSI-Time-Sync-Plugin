@@ -121,11 +121,11 @@ namespace OmsiTimeSyncPlugin
             {
                 try
                 {
-                    Log.Save("INFO", "Reading OMSI time from memory...");
+                    Log.Save("INFO", "Reading OMSI time from memory...", AppConfig.loggingLevel);
 
                     omsiTimeDateBytes = m.ReadBytes(Omsi.getMemoryAddress(omsiVersion, "datetime"), 40);
 
-                    Log.Save("INFO", "Read 40 bytes successfully");
+                    Log.Save("DEBUG", "Read 40 bytes successfully", AppConfig.loggingLevel);
 
                     int i = 0;
                     string dateStr = "";
@@ -138,7 +138,7 @@ namespace OmsiTimeSyncPlugin
                     dateStr = dateStr + BitConverter.ToInt32(omsiTimeDateBytes, i) + "/"; i += 4;   // Month
                     dateStr = dateStr + BitConverter.ToInt32(omsiTimeDateBytes, i);                 // Year
 
-                    Log.Save("INFO", "OMSI date and time read as " + dateStr);
+                    Log.Save("INFO", "OMSI date and time read as " + dateStr, AppConfig.loggingLevel);
 
                     string[] acceptableDateTimeFormats = new string[] {
                         "H:m:s.f d/M/yyyy",
@@ -178,8 +178,9 @@ namespace OmsiTimeSyncPlugin
 
                     Log.Save("DEBUG",
                         "AppConfig.onlyResyncOmsiTimeIfBehindActualTime = " + AppConfig.onlyResyncOmsiTimeIfBehindActualTime.ToString() + ", " +
-                        "timeDifference = " + AppConfig.onlyResyncOmsiTimeIfBehindActualTime.ToString() + ", " +
-                        "AppConfig.autoSyncModeIndex = " + AppConfig.autoSyncModeIndex.ToString()
+                        "timeDifference = " + timeDifference.ToString() + ", " +
+                        "AppConfig.autoSyncModeIndex = " + AppConfig.autoSyncModeIndex.ToString(),
+                        AppConfig.loggingLevel
                         );
 
                     // If either:
@@ -233,12 +234,12 @@ namespace OmsiTimeSyncPlugin
                                 newSystemTime = newSystemTime.AddSeconds(2.0);
                             }
 
-                            Log.Save("INFO", "Setting new OMSI time to " + newSystemTime.ToString("dd/MM/yyyy HH:mm:ss"));
+                            Log.Save("INFO", "Setting new OMSI time to " + newSystemTime.ToString("dd/MM/yyyy HH:mm:ss"), AppConfig.loggingLevel);
 
                             // 09 39 00 00 BB 2F 15 41 09 00 00 00 09 00 00 00 00 00 00 00 94 A5 00 24 00 00 00 00 00 00 00 00 01 00 00 00 E6 07 00 00
                             // Hour, Minute, Second, Day, Month, Year
                             // Byte, Byte,   Float,  Int, Int,   Int
-                            // The following should be compatible with latest OMSI, untested on 'tram'
+                            // The following should be compatible
                             int i = 0;
                             byte[] writeBytes = omsiTimeDateBytes;
                             writeBytes[i] = Convert.ToByte(newSystemTime.Hour); i++; // 0 - 1
@@ -252,9 +253,9 @@ namespace OmsiTimeSyncPlugin
                             bool success = m.WriteMemory(Omsi.getMemoryAddress(omsiVersion, "datetime"), "bytes", writeBytes);
 
                             if (success)
-                                Log.Save("INFO", "Successfully set new OMSI time");
+                                Log.Save("INFO", "Successfully set new OMSI time", AppConfig.loggingLevel);
                             else
-                                Log.Save("ERROR", "Failed to set new OMSI time");
+                                Log.Save("ERROR", "Failed to set new OMSI time", AppConfig.loggingLevel);
                         }
                     }
 
@@ -262,7 +263,7 @@ namespace OmsiTimeSyncPlugin
                     return getOmsiTime();
                 }
             }
-            catch { Log.Save("ERROR", "Caught exception in syncOmsiTime()"); }
+            catch { Log.Save("ERROR", "Caught exception in syncOmsiTime()", AppConfig.loggingLevel); }
 
             return false;
         }
@@ -285,8 +286,9 @@ namespace OmsiTimeSyncPlugin
                 AppConfig.autoSyncModeIndex = Convert.ToInt32(txtRdr.ReadLine());
                 _ = Convert.ToBoolean(txtRdr.ReadLine());                                                   // Formely manualSyncHotkeySound
                 _ = Convert.ToBoolean(txtRdr.ReadLine());                                                   // Formely autoDetectOffsetHours
+                AppConfig.loggingLevel = Convert.ToInt32(txtRdr.ReadLine());
 
-                Log.Save("INFO", "Configuration loaded");
+                Log.Save("INFO", "Configuration loaded", AppConfig.loggingLevel);
 
                 return true;
             }
@@ -299,8 +301,9 @@ namespace OmsiTimeSyncPlugin
                 AppConfig.windowPositionLeft = AppConfigDefaults.windowPositionLeft;
                 AppConfig.windowPositionTop = AppConfigDefaults.windowPositionTop;
                 AppConfig.autoSyncModeIndex = AppConfigDefaults.autoSyncModeIndex;
+                AppConfig.loggingLevel = AppConfigDefaults.loggingLevel;
 
-                Log.Save("ERROR", "Configuration could not be loaded");
+                Log.Save("ERROR", "Configuration could not be loaded", AppConfig.loggingLevel);
 
                 return false;
             }
@@ -324,20 +327,21 @@ namespace OmsiTimeSyncPlugin
                 txtWtr.WriteLine(AppConfig.autoSyncModeIndex.ToString());
                 txtWtr.WriteLine(false);                                                                    // Formely manualSyncHotkeySound
                 txtWtr.WriteLine(true);                                                                     // Formely autoDetectOffsetHours
+                txtWtr.WriteLine(AppConfig.loggingLevel.ToString());
 
                 txtWtr.Close();
 
-                Log.Save("INFO", "Configuration saved");
+                Log.Save("INFO", "Configuration saved", AppConfig.loggingLevel);
 
                 return true;
             }
-            catch { Log.Save("ERROR", "Configuration could not be saved"); return false; }
+            catch { Log.Save("ERROR", "Configuration could not be saved", AppConfig.loggingLevel); return false; }
         }
 
         // Background timer that runs every 60 seconds which auto saves the app's config
         private void tmrAutoSave_Tick(object state)
         {
-            Log.Save("INFO", "Auto save requested");
+            Log.Save("INFO", "Auto save requested", AppConfig.loggingLevel);
 
             saveConfig();
         }
@@ -348,7 +352,7 @@ namespace OmsiTimeSyncPlugin
             // If process isn't already attached
             if (!processAttached)
             {
-                Log.Save("INFO", "OMSI process not currently attached, attempting to find OMSI process");
+                Log.Save("INFO", "OMSI process not currently attached, attempting to find OMSI process", AppConfig.loggingLevel);
 
                 // Search for Omsi.exe process
                 int processID = Process.GetCurrentProcess().Id;
@@ -356,7 +360,7 @@ namespace OmsiTimeSyncPlugin
                 // If a process was found
                 if (processID > 0)
                 {
-                    Log.Save("INFO", "OMSI process found (PID " + processID + "), attaching");
+                    Log.Save("INFO", "OMSI process found (PID " + processID + "), attaching", AppConfig.loggingLevel);
 
                     // Attach to the process
                     processAttached = m.OpenProcess(processID);
@@ -369,7 +373,7 @@ namespace OmsiTimeSyncPlugin
                 Omsi.isVersionSupported(omsiVersion) &&
                 systemTime == DateTime.MinValue)
             {
-                Log.Save("INFO", "OMSI process attached, supported and loaded. Detecting time difference...");
+                Log.Save("INFO", "OMSI process attached, supported and loaded. Detecting time difference...", AppConfig.loggingLevel);
 
                 systemTime = DateTime.Now;
 
@@ -377,7 +381,7 @@ namespace OmsiTimeSyncPlugin
 
                 systemTime = systemTime.AddHours(hoursDifference);
 
-                Log.Save("INFO", "Time difference detected as " + hoursDifference + " hour(s)");
+                Log.Save("INFO", "Time difference detected as " + hoursDifference + " hour(s)", AppConfig.loggingLevel);
             }
             else if (!processAttached ||
                 !omsiLoaded ||
@@ -387,11 +391,12 @@ namespace OmsiTimeSyncPlugin
 
                 lblSystemTime.Text = "Waiting for OMSI map...";
 
-                Log.Save("WARN", "Process is either not attached, not loaded into a map or unsupported version:");
+                Log.Save("WARN", "Process is either not attached, not loaded into a map or unsupported version:", AppConfig.loggingLevel);
                 Log.Save("DEBUG",
                     "processAttached = " + processAttached.ToString() + ", " +
                     "omsiLoaded = " + omsiLoaded.ToString() + ", " +
-                    "Omsi.isVersionSupported(" + omsiVersion + ") = " + Omsi.isVersionSupported(omsiVersion)
+                    "Omsi.isVersionSupported(" + omsiVersion + ") = " + Omsi.isVersionSupported(omsiVersion),
+                    AppConfig.loggingLevel
                     );
             }
 
@@ -402,27 +407,27 @@ namespace OmsiTimeSyncPlugin
                 // Display the actual time in the UI
                 lblSystemTime.Text = systemTime.ToString();
 
-                Log.Save("INFO", "Set actual time to " + systemTime.ToString() + " based on " + hoursDifference + " hour(s) difference");
+                Log.Save("INFO", "Set actual time to " + systemTime.ToString() + " based on " + hoursDifference + " hour(s) difference", AppConfig.loggingLevel);
             }
 
             // If a process is attached
             if (processAttached)
             {
-                Log.Save("INFO", "Process attached");
+                Log.Save("INFO", "Process attached", AppConfig.loggingLevel);
 
                 // If OMSI version is currently unknown then try to identify what the version is
                 if (omsiVersion == "Unknown")
                 {
                     omsiVersion = getOmsiVersion();
 
-                    Log.Save("INFO", "OMSI version currently unknown, getOmsiVersion() returned " + omsiVersion);
+                    Log.Save("INFO", "OMSI version currently unknown, getOmsiVersion() returned " + omsiVersion, AppConfig.loggingLevel);
                 }
                 
                 // If the OMSI version is still unknown then we assume OMSI is still loading
                 // Further code execution stops here until the version can be identified
                 if (omsiVersion == "Unknown")
                 {
-                    Log.Save("ERROR", "OMSI version remains unknown or unsupported");
+                    Log.Save("ERROR", "OMSI version remains unknown or unsupported", AppConfig.loggingLevel);
 
                     resetFormTitleBarValues();
 
@@ -432,7 +437,7 @@ namespace OmsiTimeSyncPlugin
                 // Check if OMSI version is supported, if it's not then stop further code execution and explain in the UI
                 if (!Omsi.isVersionSupported(omsiVersion))
                 {
-                    Log.Save("ERROR", "OMSI version " + omsiVersion + " is unsupported");
+                    Log.Save("ERROR", "OMSI version " + omsiVersion + " is unsupported", AppConfig.loggingLevel);
 
                     omsiLoaded = false;
 
@@ -450,7 +455,7 @@ namespace OmsiTimeSyncPlugin
 
                 try
                 {
-                    Log.Save("INFO", "Checking logfile.txt for certain entries...");
+                    Log.Save("INFO", "Checking logfile.txt for certain entries...", AppConfig.loggingLevel);
 
                     // Open logfile.txt but allow other applications to still read/write to the logfile.txt file
                     using (var fs = new FileStream("logfile.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x1000, FileOptions.SequentialScan))
@@ -479,7 +484,7 @@ namespace OmsiTimeSyncPlugin
                 }
                 catch { return; }
 
-                Log.Save("DEBUG", "omsiLoaded = " + omsiLoaded.ToString());
+                Log.Save("DEBUG", "omsiLoaded = " + omsiLoaded.ToString(), AppConfig.loggingLevel);
 
                 if (omsiLoaded)
                 {
@@ -489,7 +494,7 @@ namespace OmsiTimeSyncPlugin
                 // If OMSI isn't loaded into a map
                 if (!omsiLoaded)
                 {
-                    Log.Save("INFO", "OMSI is not currently loaded into a map");
+                    Log.Save("INFO", "OMSI is not currently loaded into a map", AppConfig.loggingLevel);
 
                     resetFormTitleBarValues();
 
@@ -506,7 +511,7 @@ namespace OmsiTimeSyncPlugin
                     // Try and identify the map that OMSI has loaded
                     try
                     {
-                        Log.Save("INFO", "OMSI is loaded into a map, identifying map name...");
+                        Log.Save("INFO", "OMSI is loaded into a map, identifying map name...", AppConfig.loggingLevel);
 
                         int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "ptr1_to_map_path"), true);
                         int secondValue = m.ReadInt(firstValue + Omsi.getMemoryAddress(omsiVersion, "ptr2_to_map_path"), false);
@@ -514,11 +519,11 @@ namespace OmsiTimeSyncPlugin
 
                         omsiMap = Encoding.UTF8.GetString(thirdValue).Replace('\\', '/').ToLower().Replace("global.cfg", "");
 
-                        Log.Save("INFO", "Map identified as '" + omsiMap + "', verifying map folder exists...");
+                        Log.Save("INFO", "Map identified as '" + omsiMap + "', verifying map folder exists...", AppConfig.loggingLevel);
 
                         if (Directory.Exists(omsiMap))
                         {
-                            Log.Save("INFO", "Map folder exists!");
+                            Log.Save("INFO", "Map folder exists!", AppConfig.loggingLevel);
 
                             // Attempt to get all of the bus stop names for the current map
                             BusStopsCfgReader.readBusStopsCfg(omsiMap + "TTData/BusStops.cfg");
@@ -526,17 +531,17 @@ namespace OmsiTimeSyncPlugin
                         }
                         else
                         {
-                            Log.Save("ERROR", "Map folder doesn't exist!");
+                            Log.Save("ERROR", "Map folder doesn't exist!", AppConfig.loggingLevel);
                             omsiMap = "Unknown";
                         }
                     }
-                    catch { Log.Save("ERROR", "Caught exception while trying to identify the map!"); omsiMap = "Unknown"; }
+                    catch { Log.Save("ERROR", "Caught exception while trying to identify the map!", AppConfig.loggingLevel); omsiMap = "Unknown"; }
                 }
 
                 // If auto sync OMSI time is enabled
                 if (AppConfig.autoSyncOmsiTime && systemTime != DateTime.MinValue)
                 {
-                    Log.Save("INFO", "Attempting to auto sync time...");
+                    Log.Save("INFO", "Attempting to auto sync time...", AppConfig.loggingLevel);
 
                     // Go ahead with syncing OMSI time
                     syncOmsiTime();
@@ -645,7 +650,7 @@ namespace OmsiTimeSyncPlugin
             }
             else
             {
-                Log.Save("WARN", "OMSI is not currently running!");
+                Log.Save("WARN", "OMSI is not currently running!", AppConfig.loggingLevel);
 
                 // State that 'OMSI is not running' in the UI
                 lblOmsiTime.Text = "OMSI is not running!";
@@ -737,6 +742,7 @@ namespace OmsiTimeSyncPlugin
 
             // Setup the dropdown lists so they are configured based on the app's config
             cmbAutoSyncMode.SelectedIndex = AppConfig.autoSyncModeIndex;
+            cmbLoggingLevel.SelectedIndex = AppConfig.loggingLevel;
 
             // Same with checkboxes
             chkAutoSyncOmsiTime.Checked = AppConfig.autoSyncOmsiTime;
@@ -991,6 +997,12 @@ namespace OmsiTimeSyncPlugin
             // Set bus absolute humidity
             OmsiTelemetry.setBusCabinAbsHumidity = 8.0f;
         }
+
+        // Logging level
+        private void cmbLoggingLevel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AppConfig.loggingLevel = cmbLoggingLevel.SelectedIndex;
+        }
     }
 
     // Struct for OMSI memory addresses
@@ -1069,6 +1081,7 @@ namespace OmsiTimeSyncPlugin
         public static int windowPositionLeft = AppConfigDefaults.windowPositionLeft;
         public static int windowPositionTop = AppConfigDefaults.windowPositionTop;
         public static int autoSyncModeIndex = AppConfigDefaults.autoSyncModeIndex;
+        public static int loggingLevel = AppConfigDefaults.loggingLevel;
     }
 
     // This app's default config
@@ -1080,5 +1093,6 @@ namespace OmsiTimeSyncPlugin
         public static int windowPositionLeft = -1;
         public static int windowPositionTop = -1;
         public static int autoSyncModeIndex = 0;
+        public static int loggingLevel = 0;
     }
 }
