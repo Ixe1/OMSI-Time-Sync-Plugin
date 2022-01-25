@@ -1110,6 +1110,6 @@ namespace OmsiTimeSyncPlugin
         public static int windowPositionLeft = -1;
         public static int windowPositionTop = -1;
         public static int autoSyncModeIndex = 0;
-        public static int loggingLevel = 0;
+        public static int loggingLevel = 3; // Info level
     }
 }
