@@ -1,10 +1,10 @@
 **Created by:** Paul Lewis
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/Ixe1/OMSI-Time-Sync)](https://github.com/Ixe1/OMSI-Time-Sync/releases)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/Ixe1/OMSI-Time-Sync-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Plugin/releases)
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/ixe1)
 
-[![GitHub issues](https://img.shields.io/github/issues/Ixe1/OMSI-Time-Sync)](https://github.com/Ixe1/OMSI-Time-Sync/issues) [![GitHub forks](https://img.shields.io/github/forks/Ixe1/OMSI-Time-Sync)](https://github.com/Ixe1/OMSI-Time-Sync/network) [![GitHub license](https://img.shields.io/github/license/Ixe1/OMSI-Time-Sync)](https://github.com/Ixe1/OMSI-Time-Sync)
+[![GitHub issues](https://img.shields.io/github/issues/Ixe1/OMSI-Time-Sync-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Plugin/issues) [![GitHub forks](https://img.shields.io/github/forks/Ixe1/OMSI-Time-Sync-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Plugin/network) [![GitHub license](https://img.shields.io/github/license/Ixe1/OMSI-Time-Sync-Plugin)](https://github.com/Ixe1/OMSI-Time-Sync-Plugin)
 
 # OMSI Time Sync Plugin
 A simple tool which automatically keeps OMSI 2's in-game time in sync with either the system time or Bus Company Simulator virtual company's time. Optionally you can manually sync the in-game time by pressing the button on the UI.
