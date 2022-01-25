@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -128,7 +129,8 @@ namespace OmsiTimeSyncPlugin
 
                     int i = 0;
                     string dateStr = "";
-                    // HH:mm:ss.ms dd/MM/YYYY
+                    // H:m:s.f[ffffff] d/M/YYYY
+                    // H:m:s,f[ffffff] d/M/YYYY
                     dateStr = dateStr + (int)omsiTimeDateBytes[i] + ":"; i++;                       // Hour
                     dateStr = dateStr + (int)omsiTimeDateBytes[i] + ":"; i += 3;                    // Minute
                     dateStr = dateStr + BitConverter.ToSingle(omsiTimeDateBytes, i) + " "; i += 8;  // Second.Millisecond
@@ -138,7 +140,24 @@ namespace OmsiTimeSyncPlugin
 
                     Log.Save("INFO", "OMSI date and time read as " + dateStr);
 
-                    return DateTime.TryParse(dateStr, out omsiTime);
+                    string[] acceptableDateTimeFormats = new string[] {
+                        "H:m:s.f d/M/yyyy",
+                        "H:m:s.ff d/M/yyyy",
+                        "H:m:s.fff d/M/yyyy",
+                        "H:m:s.ffff d/M/yyyy",
+                        "H:m:s.fffff d/M/yyyy",
+                        "H:m:s.ffffff d/M/yyyy",
+                        "H:m:s.fffffff d/M/yyyy",
+                        "H:m:s,f d/M/yyyy",
+                        "H:m:s,ff d/M/yyyy",
+                        "H:m:s,fff d/M/yyyy",
+                        "H:m:s,ffff d/M/yyyy",
+                        "H:m:s,fffff d/M/yyyy",
+                        "H:m:s,ffffff d/M/yyyy",
+                        "H:m:s,fffffff d/M/yyyy"
+                    };
+
+                    return DateTime.TryParseExact(dateStr, acceptableDateTimeFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out omsiTime);
                 }
                 catch { }
             }
@@ -224,7 +243,7 @@ namespace OmsiTimeSyncPlugin
                             byte[] writeBytes = omsiTimeDateBytes;
                             writeBytes[i] = Convert.ToByte(newSystemTime.Hour); i++; // 0 - 1
                             writeBytes[i] = Convert.ToByte(newSystemTime.Minute); i += 3; // 1 - 4
-                            BitConverter.GetBytes(Convert.ToSingle(newSystemTime.Second + "." + newSystemTime.Millisecond)).CopyTo(writeBytes, i); i += 8; // 4 - 12
+                            BitConverter.GetBytes(Convert.ToSingle(newSystemTime.Second + "." + newSystemTime.Millisecond, CultureInfo.GetCultureInfo("en-GB"))).CopyTo(writeBytes, i); i += 8; // 4 - 12
                             BitConverter.GetBytes(newSystemTime.Day).CopyTo(writeBytes, i); i += 20; // 12 - 32
                             BitConverter.GetBytes(newSystemTime.Month).CopyTo(writeBytes, i); i += 4; // 32 - 36
                             BitConverter.GetBytes(newSystemTime.Year).CopyTo(writeBytes, i); // 35 - 39
