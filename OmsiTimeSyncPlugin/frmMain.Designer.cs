@@ -188,7 +188,7 @@
             this.lblVersionAuthorInfo.Name = "lblVersionAuthorInfo";
             this.lblVersionAuthorInfo.Size = new System.Drawing.Size(100, 39);
             this.lblVersionAuthorInfo.TabIndex = 14;
-            this.lblVersionAuthorInfo.Text = "Version 1.13\r\nCreated by Ixel";
+            this.lblVersionAuthorInfo.Text = "Version 1.14\r\nCreated by Ixel";
             this.lblVersionAuthorInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblVersionAuthorInfo.UseCompatibleTextRendering = true;
             // 
