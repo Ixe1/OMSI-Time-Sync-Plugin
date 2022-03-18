@@ -391,9 +391,9 @@ namespace OmsiTimeSyncPlugin
             {
                 systemTime = DateTime.MinValue;
 
-                lblSystemTime.Text = "Waiting for OMSI map...";
+                lblSystemTime.Text = "Waiting for bus...";
 
-                Log.Save("WARN", "Process is either not attached, not loaded into a map or unsupported version:", AppConfig.loggingLevel);
+                Log.Save("WARN", "Process is either not attached, no bus is assigned or unsupported version:", AppConfig.loggingLevel);
                 Log.Save("DEBUG",
                     "processAttached = " + processAttached.ToString() + ", " +
                     "omsiLoaded = " + omsiLoaded.ToString() + ", " +
@@ -482,12 +482,12 @@ namespace OmsiTimeSyncPlugin
                 // If OMSI isn't loaded into a map
                 if (!omsiLoaded)
                 {
-                    Log.Save("INFO", "OMSI is not currently loaded into a map", AppConfig.loggingLevel);
+                    Log.Save("INFO", "No bus is currently assigned", AppConfig.loggingLevel);
 
                     resetFormTitleBarValues();
 
-                    // Indicate that OMSI is running but isn't loaded into a map yet
-                    lblOmsiTime.Text = "OMSI is running, waiting for a map to load!";
+                    // Indicate that OMSI is running but a bus hasn't been assigned yet
+                    lblOmsiTime.Text = "OMSI is running, waiting for a bus!";
 
                     omsiMap = "Unknown";
 
@@ -538,11 +538,11 @@ namespace OmsiTimeSyncPlugin
                 // Show MPH or KMH in the UI's title bar
                 if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
                 {
-                    formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph * 0.6213711922).ToString().PadRight(3) + "MPH";
+                    formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph * 0.6213711922).ToString().PadRight(4) + "MPH";
                 }
                 else if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("KMH"))
                 {
-                    formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph).ToString().PadRight(3) + "KMH";
+                    formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph).ToString().PadRight(4) + "KMH";
                 }
 
                 // Show current OMSI time in UI's title bar
@@ -633,6 +633,8 @@ namespace OmsiTimeSyncPlugin
                     formTitleBarBusStopRequest.ForeColor = Color.FromArgb(64, 64, 64);
                 }
 
+                formTitleBarCurrentCabinTemperature.Text = String.Format("{0:0.0#}", Math.Round(OmsiTelemetry.busCabinTemperature, 1)) + " °C";
+
                 // State the current date and time of OMSI in the UI
                 lblOmsiTime.Text = omsiTime.ToString();
             }
@@ -651,17 +653,18 @@ namespace OmsiTimeSyncPlugin
         {
             if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("MPH"))
             {
-                formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph * 0.6213711922).ToString().PadRight(3) + "MPH";
+                formTitleBarCurrentOmsiSpeed.Text = "0   MPH";
             }
             else if (formTitleBarCurrentOmsiSpeed.Text.EndsWith("KMH"))
             {
-                formTitleBarCurrentOmsiSpeed.Text = Math.Round(OmsiTelemetry.busSpeedKph).ToString().PadRight(3) + "KMH";
+                formTitleBarCurrentOmsiSpeed.Text = "0   KMH";
             }
 
             formTitleBarCurrentOmsiTime.Text = "-";
             formTitleBarCurrentOmsiDelay.Text = "-";
             formTitleBarCurrentOmsiDelay.ForeColor = Color.White;
             formTitleBarNextBusStop.Text = "-";
+            formTitleBarCurrentCabinTemperature.Text = "-";
         }
 
         // For handling the state of auto syncing OMSI time

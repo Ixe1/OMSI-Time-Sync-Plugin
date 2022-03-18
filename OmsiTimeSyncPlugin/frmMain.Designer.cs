@@ -64,6 +64,8 @@
             this.lblPreheatButtonDescription = new System.Windows.Forms.Label();
             this.cmbLoggingLevel = new System.Windows.Forms.ComboBox();
             this.lblLoggingLevel = new System.Windows.Forms.Label();
+            this.formTitleBarIconCurrentCabinTemperature = new System.Windows.Forms.Label();
+            this.formTitleBarCurrentCabinTemperature = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formBorder)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.formTitleBar)).BeginInit();
@@ -188,7 +190,7 @@
             this.lblVersionAuthorInfo.Name = "lblVersionAuthorInfo";
             this.lblVersionAuthorInfo.Size = new System.Drawing.Size(100, 39);
             this.lblVersionAuthorInfo.TabIndex = 14;
-            this.lblVersionAuthorInfo.Text = "Version 1.14\r\nCreated by Ixel";
+            this.lblVersionAuthorInfo.Text = "Version 1.16\r\nCreated by Ixel";
             this.lblVersionAuthorInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lblVersionAuthorInfo.UseCompatibleTextRendering = true;
             // 
@@ -505,7 +507,7 @@
             this.formTitleBarNextBusStop.ForeColor = System.Drawing.Color.White;
             this.formTitleBarNextBusStop.Location = new System.Drawing.Point(32, 34);
             this.formTitleBarNextBusStop.Name = "formTitleBarNextBusStop";
-            this.formTitleBarNextBusStop.Size = new System.Drawing.Size(333, 17);
+            this.formTitleBarNextBusStop.Size = new System.Drawing.Size(220, 17);
             this.formTitleBarNextBusStop.TabIndex = 41;
             this.formTitleBarNextBusStop.Text = "-";
             this.formTitleBarNextBusStop.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -586,12 +588,46 @@
             this.lblLoggingLevel.Text = "Logging Level:";
             this.lblLoggingLevel.UseCompatibleTextRendering = true;
             // 
+            // formTitleBarIconCurrentCabinTemperature
+            // 
+            this.formTitleBarIconCurrentCabinTemperature.BackColor = System.Drawing.Color.Black;
+            this.formTitleBarIconCurrentCabinTemperature.Font = new System.Drawing.Font("Wingdings", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
+            this.formTitleBarIconCurrentCabinTemperature.ForeColor = System.Drawing.Color.Orange;
+            this.formTitleBarIconCurrentCabinTemperature.Location = new System.Drawing.Point(266, 33);
+            this.formTitleBarIconCurrentCabinTemperature.Name = "formTitleBarIconCurrentCabinTemperature";
+            this.formTitleBarIconCurrentCabinTemperature.Size = new System.Drawing.Size(18, 18);
+            this.formTitleBarIconCurrentCabinTemperature.TabIndex = 49;
+            this.formTitleBarIconCurrentCabinTemperature.Text = "T";
+            this.formTitleBarIconCurrentCabinTemperature.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.formTitleBarIconCurrentCabinTemperature.UseCompatibleTextRendering = true;
+            this.formTitleBarIconCurrentCabinTemperature.MouseDown += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseDown);
+            this.formTitleBarIconCurrentCabinTemperature.MouseMove += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseMove);
+            this.formTitleBarIconCurrentCabinTemperature.MouseUp += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseUp);
+            // 
+            // formTitleBarCurrentCabinTemperature
+            // 
+            this.formTitleBarCurrentCabinTemperature.BackColor = System.Drawing.Color.Black;
+            this.formTitleBarCurrentCabinTemperature.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.formTitleBarCurrentCabinTemperature.ForeColor = System.Drawing.Color.White;
+            this.formTitleBarCurrentCabinTemperature.Location = new System.Drawing.Point(290, 32);
+            this.formTitleBarCurrentCabinTemperature.Name = "formTitleBarCurrentCabinTemperature";
+            this.formTitleBarCurrentCabinTemperature.Size = new System.Drawing.Size(75, 17);
+            this.formTitleBarCurrentCabinTemperature.TabIndex = 48;
+            this.formTitleBarCurrentCabinTemperature.Text = "-";
+            this.formTitleBarCurrentCabinTemperature.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.formTitleBarCurrentCabinTemperature.UseCompatibleTextRendering = true;
+            this.formTitleBarCurrentCabinTemperature.MouseDown += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseDown);
+            this.formTitleBarCurrentCabinTemperature.MouseMove += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseMove);
+            this.formTitleBarCurrentCabinTemperature.MouseUp += new System.Windows.Forms.MouseEventHandler(this.formTitleBar_MouseUp);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(550, 265);
+            this.Controls.Add(this.formTitleBarIconCurrentCabinTemperature);
+            this.Controls.Add(this.formTitleBarCurrentCabinTemperature);
             this.Controls.Add(this.lblLoggingLevel);
             this.Controls.Add(this.cmbLoggingLevel);
             this.Controls.Add(this.lblPreheatButtonDescription);
@@ -684,6 +720,8 @@
         private System.Windows.Forms.Label lblPreheatButtonDescription;
         private System.Windows.Forms.ComboBox cmbLoggingLevel;
         private System.Windows.Forms.Label lblLoggingLevel;
+        private System.Windows.Forms.Label formTitleBarIconCurrentCabinTemperature;
+        private System.Windows.Forms.Label formTitleBarCurrentCabinTemperature;
     }
 }
 
