@@ -455,36 +455,22 @@ namespace OmsiTimeSyncPlugin
                     lblOmsiTime.ForeColor = SystemColors.ControlText;
                 }
 
+                bool isBusAssigned = false;
+
                 try
                 {
-                    Log.Save("INFO", "Checking logfile.txt for certain entries...", AppConfig.loggingLevel);
+                    int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "bus"), true);
+                    float secondValue = m.ReadFloat(firstValue + Omsi.getMemoryAddress(omsiVersion, "bus_cabin_humidity"), false);
 
-                    // Open logfile.txt but allow other applications to still read/write to the logfile.txt file
-                    using (var fs = new FileStream("logfile.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 0x1000, FileOptions.SequentialScan))
-                    using (var sr = new StreamReader(fs, Encoding.UTF8))
-                    {
-                        string line;
-
-                        // Iterate through each line
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            // This indicates OMSI has loaded a map
-                            if (line.Contains("Information: Traffic loaded"))
-                            {
-                                omsiLoaded = true;
-                            }
-                            // This indicates OMSI has unloaded a map
-                            else if (line.Contains("Information: Actual map closed!"))
-                            {
-                                omsiLoaded = false;
-                            }
-                        }
-
-                        sr.Close();
-                        fs.Close();
-                    }
+                    // Relative humidity in a bus is unlikely to be exactly 0%
+                    if (secondValue > 0.0f) isBusAssigned = true;
                 }
-                catch { return; }
+                catch { }
+
+                Log.Save("DEBUG", "isBusAssigned = " + isBusAssigned.ToString(), AppConfig.loggingLevel);
+
+                if (isBusAssigned) omsiLoaded = true;
+                else omsiLoaded = false;
 
                 Log.Save("DEBUG", "omsiLoaded = " + omsiLoaded.ToString(), AppConfig.loggingLevel);
 
@@ -573,8 +559,8 @@ namespace OmsiTimeSyncPlugin
                     // Try to get the current delay (in seconds) of how early or late it currently is
                     try
                     {
-                        int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "timetable_manager"), true);
-                        int secondValue = m.ReadInt(firstValue + Omsi.getMemoryAddress(omsiVersion, "ttm_delay"), false);
+                        int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "bus"), true);
+                        int secondValue = m.ReadInt(firstValue + Omsi.getMemoryAddress(omsiVersion, "bus_delay"), false);
 
                         omsiDelay = secondValue;
 
@@ -587,8 +573,8 @@ namespace OmsiTimeSyncPlugin
                     // Try to also get the next bus stop ID and compare with what's in the BusStops.cfg file or TTP files for the current map
                     try
                     {
-                        int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "timetable_manager"), true);
-                        int secondValue = m.ReadInt(firstValue + Omsi.getMemoryAddress(omsiVersion, "ttm_next_bus_stop_id"), false);
+                        int firstValue = m.ReadInt(Omsi.getMemoryAddress(omsiVersion, "bus"), true);
+                        int secondValue = m.ReadInt(firstValue + Omsi.getMemoryAddress(omsiVersion, "bus_next_bus_stop_id"), false);
 
                         string busStopName;
 
@@ -869,10 +855,12 @@ namespace OmsiTimeSyncPlugin
             // v2.3.004
             // Date/Time
             Omsi.addMemoryAddress("2.3.004", new OmsiAddress("datetime", 0x0046176C));                      // array of bytes
-            // Timetable Manager
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("timetable_manager", 0x00461500));             // int (memory address for timetable stuff)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ttm_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
-            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ttm_delay", 0x6BC));                          // offset - int (delay in seconds)
+            // Bus
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("bus", 0x00461500));                           // int (memory address for timetable stuff)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("bus_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("bus_delay", 0x6BC));                          // offset - int (delay in seconds)
+            Omsi.addMemoryAddress("2.3.004", new OmsiAddress("bus_cabin_humidity", 0x600));                 // offset - float (cabin relative humidity)
+                                                                                                            // * Primarily used for checking if a bus is assigned/spawned
             // Environment ???
             Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ptr1_to_map_path", 0x00461588));              // int (memory address pointer leading to map path)
             Omsi.addMemoryAddress("2.3.004", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
@@ -880,10 +868,11 @@ namespace OmsiTimeSyncPlugin
             // v2.2.032
             // Date/Time
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("datetime", 0x00461768));                      // array of bytes
-            // Timetable Manager
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("timetable_manager", 0x004614FC));             // int (memory address for timetable stuff)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ttm_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
-            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ttm_delay", 0x6BC));                          // offset - int (delay in seconds)
+            // Bus
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("bus", 0x004614FC));                           // int (memory address for timetable stuff)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("bus_next_bus_stop_id", 0x6B0));               // offset - int (next bus stop ID)
+            Omsi.addMemoryAddress("2.2.032", new OmsiAddress("bus_delay", 0x6BC));                          // offset - int (delay in seconds)
+            Omsi.addMemoryAddress("2.3.032", new OmsiAddress("bus_cabin_humidity", 0x600));                 // offset - float (cabin relative humidity)
             // Environment ???
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr1_to_map_path", 0x00461584));              // int (memory address pointer leading to map path)
             Omsi.addMemoryAddress("2.2.032", new OmsiAddress("ptr2_to_map_path", 0x154));                   // int (memory address offset leading to map path)
