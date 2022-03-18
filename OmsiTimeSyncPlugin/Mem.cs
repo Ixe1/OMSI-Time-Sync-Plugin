@@ -68,12 +68,10 @@ namespace OmsiTimeSyncPlugin
 
                     return (int)buffer[0];
                 }
-                catch { }
-
-                return -2;
+                catch { throw new Exception("Invalid value at address"); }
             }
 
-            return -1;
+            throw new Exception("Process not attached");
         }
 
         public byte[] ReadBytes(int memoryAddress, int length, bool baseAddress = true, bool untilNullByte = false)
@@ -100,12 +98,10 @@ namespace OmsiTimeSyncPlugin
 
                     return buffer;
                 }
-                catch { }
-
-                return null;
+                catch { throw new Exception("Invalid value at address"); }
             }
 
-            return null;
+            throw new Exception("Process not attached");
         }
 
         public float ReadFloat(int memoryAddress, bool baseAddress = true)
@@ -121,12 +117,10 @@ namespace OmsiTimeSyncPlugin
 
                     return BitConverter.ToSingle(buffer, 0);
                 }
-                catch { }
-
-                return -2f;
+                catch { throw new Exception("Invalid value at address"); }
             }
 
-            return -1f;
+            throw new Exception("Process not attached");
         }
 
         public int ReadInt(int memoryAddress, bool baseAddress = true)
@@ -142,12 +136,10 @@ namespace OmsiTimeSyncPlugin
 
                     return BitConverter.ToInt32(buffer, 0);
                 }
-                catch { }
-
-                return -2;
+                catch { throw new Exception("Invalid value at address"); }
             }
 
-            return -1;
+            throw new Exception("Process not attached");
         }
 
         public bool WriteMemory(int memoryAddress, string dataType, string newValue, bool baseAddress = true)
