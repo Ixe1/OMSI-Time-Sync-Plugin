@@ -688,7 +688,7 @@ namespace OmsiTimeSyncPlugin
             if (!syncOmsiTime())
             {
                 // Show an error message stating that it failed for some reason
-                MessageBox.Show("ERROR: Unable to sync OMSI time. Please check that a map has been loaded.", "OMSI Time Sync - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("ERROR: Unable to sync OMSI time. Please check that a bus has been spawned and assigned to you.", "OMSI Time Sync - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
